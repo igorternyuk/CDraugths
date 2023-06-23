@@ -33,5 +33,57 @@ unsigned int Utils::hash_str(const char *s)
          h = (h * A) ^ (s[0] * B);
          s++;
        }
-    return h % C;
+       return h % C;
+}
+
+bool Utils::AreStepsEqual(const Step &first, const Step &second)
+{
+    const Tile& tileStart1 = first.GetStart();
+    const Tile& tileEnd1 = first.GetEnd();
+    const Tile& tileStart2 = second.GetStart();
+    const Tile& tileEnd2 = second.GetEnd();
+    return tileStart1 == tileStart2 && tileEnd1 == tileEnd2;
+}
+
+bool Utils::AreMovesEqual(const Move &first, const Move &second, std::function<bool (const Step &, const Step &)> pred)
+{
+    const int stepCountFirst = first.StepCount();
+    const int stepCountSecond = second.StepCount();
+    if(stepCountFirst != stepCountSecond)
+        return false;
+
+    const size_t min = stepCountFirst;
+    for(size_t i = 0; i < min; ++i)
+    {
+        const Step& step1 = first.GetStep(i);
+        const Step& step2 = second.GetStep(i);
+        if(!pred(step1,step2))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Utils::IsSubset(const Move &first, const Move &second, std::function<bool(const Step &,const Step &)> pred)
+{
+    const int stepCountFirst = first.StepCount();
+    const int stepCountSecond = second.StepCount();
+
+    if(stepCountFirst < stepCountSecond)
+    {
+        const size_t min = stepCountFirst;
+        for(size_t i = 0; i < min; ++i)
+        {
+            const Step& step1 = first.GetStep(i);
+            const Step& step2 = second.GetStep(i);
+            if(!pred(step1,step2))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
 }

@@ -18,7 +18,7 @@ Game::Game():_mode(Mode::CPU_HUMAN), _type(Type::DRAUGHTS64)
 {
     _board = std::make_shared<BoardDraugths64>();
     _playerRed = std::make_shared<PlayerHuman>(Alliance::RED);
-    _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::BLUE, 8);
+    _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::BLUE, 6);
 }
 
 Board &Game::GetBoard()

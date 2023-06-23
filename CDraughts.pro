@@ -7,6 +7,7 @@ LIBS += -lglut -lGLU -lGL -lGLEW -lpthread
 SOURCES += \
     alliance.cpp \
     app.cpp \
+    board_brazilian.cpp \
     board_draugths64.cpp \
     drawhelper.cpp \
     euristic_default.cpp \
@@ -15,6 +16,7 @@ SOURCES += \
     game.cpp \
     alphabeta.cpp \
     board.cpp \
+    menu.cpp \
     move.cpp \
     piece.cpp \
     player.cpp \
@@ -27,11 +29,13 @@ SOURCES += \
     rules_international.cpp \
     step.cpp \
     tile.cpp \
-    utils.cpp
+    utils.cpp \
+    view.cpp
 
 HEADERS += \
     alliance.hpp \
     app.hpp \
+    board_brazilian.hpp \
     board_draugths64.hpp \
     drawhelper.hpp \
     euristic_default.hpp \
@@ -40,6 +44,7 @@ HEADERS += \
     alphabeta.hpp \
     board.hpp \
     gamestatus.hpp \
+    menu.hpp \
     move.hpp \
     movestrategy.hpp \
     piece.hpp \
@@ -54,4 +59,5 @@ HEADERS += \
     rules_international.hpp \
     step.hpp \
     tile.hpp \
-    utils.hpp
+    utils.hpp \
+    view.hpp

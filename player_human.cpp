@@ -1,4 +1,5 @@
 #include "player_human.hpp"
+#include "utils.hpp"
 
 PlayerHuman::PlayerHuman(Alliance alliance): Player(alliance)
 {
@@ -10,10 +11,37 @@ Move PlayerHuman::MakeMove(const Position &position)
     const size_t sz = _selectedSequence.size();
     if(sz > 1)
     {
+        Move move;
+        for(size_t si = 1; si < sz; ++si)
+        {
+            const int row_ = _selectedSequence[si - 1].first;
+            const int col_ = _selectedSequence[si - 1].second;
+            const int row = _selectedSequence[si].first;
+            const int col = _selectedSequence[si].second;
+            const Tile& tileStart = position.GetTile(row_, col_);
+            const Tile& tileEnd = position.GetTile(row, col);
+            Step step(tileStart, tileEnd);
+            move.AddStep(step);
+        }
         std::vector<Move> lolm;
         position.LegalMoves(position.GetTurn(), lolm);
         const int movesAvailable = lolm.size();
+        bool isSubset = false;
         for(int li = 0; li < movesAvailable; ++li)
+        {
+             Move& lm = lolm[li];
+             if(Utils::AreMovesEqual(move,lm))
+             {
+                 lm.UpdateStatus();
+                 Unselect();
+                 return lm;
+             }
+             isSubset |= Utils::IsSubset(move, lm);
+        }
+
+        if(!isSubset)
+            Unselect();
+        /*for(int li = 0; li < movesAvailable; ++li)
         {
             Move& lm = lolm[li];
             if(lm.StepCount() == sz - 1)
@@ -40,7 +68,7 @@ Move PlayerHuman::MakeMove(const Position &position)
                     return lm;
                 }
             }
-        }
+        }*/
     }
 
     return emptyMove;

@@ -1,15 +1,6 @@
 #pragma once
 #include "rules.hpp"
 
-/*
-    virtual Alliance FirstMoveAlliance() const = 0;
-    virtual int GetPieceValue(const Piece& piece) const = 0;
-    virtual bool IsTileValid(const Position& position, const Tile& tile) const = 0;
-    virtual void CalcLegalMoves(const Position& position, Alliance alliance, std::vector<Move> &moves) const = 0;
-    virtual GameStatus GetGameStatus(const Position& position) = 0;
-    virtual bool CheckIfCoronate(const Position& position, Move& move) const = 0;
-*/
-
 class RulesDraughts64: public Rules
 {
 public:
