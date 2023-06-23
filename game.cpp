@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace draughts;
+
 Game *Game::GetInstance()
 {
     static Game game;
@@ -68,7 +70,7 @@ void Game::UpdateGameStatus()
 
 void Game::SwitchTurn()
 {
-    this->_turn = OpponentAlliance(_turn);
+    this->_turn = draughts::OpponentAlliance(_turn);
 }
 
 void Game::Play()

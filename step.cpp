@@ -1,5 +1,7 @@
 #include "step.hpp"
 
+using namespace draughts;
+
 const Tile &Step::GetStart() const
 {
     return start;

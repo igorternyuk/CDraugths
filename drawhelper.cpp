@@ -3,6 +3,8 @@
 #include <cmath>
 #include <cstring>
 
+using namespace view;
+
 void DrawHelper::DrawArrow(float x1, float y1, float x2, float y2, Color color)
 {
     const double arrowSideLength = 20;

@@ -7,6 +7,8 @@
 #include <sstream>
 #include <algorithm>
 
+using namespace draughts;
+
 constexpr int INF = 1000000000;
 
 MiniMaxAlphaBeta::MiniMaxAlphaBeta(std::shared_ptr<EvaluationStrategy> evaluator, int depth, bool log):

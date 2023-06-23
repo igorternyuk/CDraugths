@@ -1,7 +1,10 @@
 #pragma once
 
-class Menu
+namespace view
 {
-public:
-    Menu();
-};
+    class Menu
+    {
+    public:
+        Menu();
+    };
+}

@@ -1,4 +1,7 @@
 #include "utils.hpp"
+
+using namespace draughts;
+
 #define A 54059 /* a prime */
 #define B 76963 /* another prime */
 #define C 86969 /* yet another prime */

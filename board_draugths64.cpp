@@ -3,6 +3,8 @@
 #include "rules.hpp"
 #include <sstream>
 
+using namespace draughts;
+
 static std::map<int, std::string> algebraicNotaionFileMap
 {
     { 0, "a"},
@@ -127,6 +129,7 @@ bool BoardDraugths64::MakeMove(const Move &move)
 
 void BoardDraugths64::SetupInitialPosition()
 {
+    Reset();
     Clear();
     for(int y = 0; y < NUM_CHECKER_ROW_FOR_ONE_SIDE; ++y)
         for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
@@ -136,6 +139,59 @@ void BoardDraugths64::SetupInitialPosition()
     for(int y = BOARD_SIZE - NUM_CHECKER_ROW_FOR_ONE_SIDE; y < BOARD_SIZE; ++y)
         for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
             SetPiece(y,x,Alliance::RED);
+}
+
+GameStatus BoardDraugths64::GetGameStatus() const
+{
+    if(!_mapRep.empty() && _mapRep.find(_hash) != _mapRep.end() )
+    {
+        if(_mapRep.at(_hash) >= 3)
+        //std::cout << "Draw by threefold repetition!\n";
+        return GameStatus::DRAW;
+    }
+
+    if(count15 >= 2 * 15)
+    {
+        //std::cout << "No king capture within 15 moves!\n";
+        return GameStatus::DRAW;
+    }
+
+    if(count23 >= 2 * 5)
+    {
+        //std::cout << "No captures or coronations in the last 5 moves for 2-3 piece ending!\n";
+        return GameStatus::DRAW;
+    }
+
+    if(count45 >= 2 * 30)
+    {
+        //std::cout << "No captures or coronations in the last 30 moves for 4-5 piece ending!\n";
+        return GameStatus::DRAW;
+    }
+
+    if(count67 >= 2 * 60)
+    {
+        //std::cout << "No captures or coronations in the last 60 moves for 6-7 piece ending!\n";
+        return GameStatus::DRAW;
+    }
+
+    if(_moveLog.size() > 30)
+    {
+        int count = 0;
+        for(auto it = _moveLog.rbegin(); it != _moveLog.rend(); ++it)
+        {
+            const Move& move = *it;
+            for(size_t i = 0; i < move.StepCount(); ++i)
+            {
+                if(move.GetStep(i).GetStart().GetPiece().IsKing())
+                    count++;
+            }
+        }
+
+        if(count >= 30)
+            return GameStatus::DRAW;
+    }
+
+    return Board::GetGameStatus();
 }
 
 std::string BoardDraugths64::TileToAlgebraicNotation(const Tile &tile) const

@@ -1,5 +1,7 @@
 #include "rules.hpp"
 
+using namespace draughts;
+
 bool Rules::IsSubset(const Move &first, const Move &second) const
 {
     const int stepCountFirst = first.StepCount();

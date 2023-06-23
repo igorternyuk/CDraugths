@@ -1,9 +1,13 @@
 #pragma once
 
-enum class GameStatus
+namespace draughts
 {
-    RED_WON,
-    BLUE_WON,
-    DRAW,
-    PLAY
-};
+    enum class GameStatus
+    {
+        RED_WON,
+        BLUE_WON,
+        DRAW,
+        PLAY
+    };
+}
+

@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 
+using namespace draughts;
+
 Board::Board(std::shared_ptr<Rules> rules, int N):
     _rules(rules)
 {
@@ -19,6 +21,15 @@ void Board::Clear()
 {
     for(size_t i = 0; i < _grid.size(); ++i)
         _grid[i].RemovePiece();
+}
+
+void Board::Reset()
+{
+    _moveLog.clear();
+    _bValidLegalMoves = false;
+    _legalMoves.clear();
+    _bValidHash = false;
+    _hash = 0;
 }
 
 Tile &Board::GetTile(int row, int col)
@@ -85,6 +96,17 @@ void Board::CalcPieceCount(int &count_red_pieces, int &count_red_kings, int &cou
     count_blue_pieces = 0;
     count_blue_kings = 0;
 
+    auto redPieces = GetPieces(Alliance::RED);
+    auto bluePieces = GetPieces(Alliance::BLUE);
+
+    for(const auto& [k,p] : redPieces)
+    {
+        const Piece& piece = *p;
+        if(piece.IsKing())
+            count_red_kings++;
+        else
+            count_red_pieces++;
+    }
     const int BOARD_SIZE = GetBoardSize();
     for(int y = 0; y < BOARD_SIZE; ++y)
     {
@@ -117,8 +139,7 @@ void Board::CalcPieceCount(int &count_red_pieces, int &count_red_kings, int &cou
 
 bool Board::IsEndGameScenario() const
 {
-    GameStatus gamestatus = _rules->GetGameStatus(*this);
-    return gamestatus != GameStatus::PLAY;
+   return GetGameStatus() != GameStatus::PLAY;
 }
 
 GameStatus Board::GetGameStatus() const
@@ -324,7 +345,7 @@ const std::vector<Move> &Board::GetMoveLog() const
     return _moveLog;
 }
 
-std::shared_ptr<Rules> Board::GetRules() const
+std::shared_ptr<draughts::Rules> Board::GetRules() const
 {
     return _rules;
 }

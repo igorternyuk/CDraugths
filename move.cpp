@@ -1,5 +1,7 @@
 #include "move.hpp"
 
+using namespace draughts;
+
 Move::Move(): _isCoronation(false), _status(Move::Status::ILLEGAL_MOVE)
 {
 

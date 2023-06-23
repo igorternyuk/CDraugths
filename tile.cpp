@@ -1,6 +1,8 @@
 #include "tile.hpp"
 #include <cmath>
 
+using namespace draughts;
+
 Tile Tile::NULL_TILE = Tile();
 
 Tile::Tile(int row, int col, bool isDark):

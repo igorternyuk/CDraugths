@@ -2,9 +2,13 @@
 #include "position.hpp"
 #include "rules.hpp"
 
-class EvaluationStrategy
+namespace draughts
 {
-public:
-    ~EvaluationStrategy() {}
-    virtual int Evaluate(const Position& position, const Rules& rules) = 0;
-};
+    class EvaluationStrategy
+    {
+    public:
+        ~EvaluationStrategy() {}
+        virtual int Evaluate(const Position& position, const Rules& rules) = 0;
+    };
+}
+

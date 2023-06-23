@@ -1,6 +1,8 @@
 #include "rules_draughts64.hpp"
 #include <algorithm>
 
+using namespace draughts;
+
 RulesDraughts64::RulesDraughts64()
 {
 
@@ -135,11 +137,6 @@ bool RulesDraughts64::CheckIfCoronate(const Position &position, const Move &move
         coronation = true;
     }
     return coronation;
-}
-
-GameStatus RulesDraughts64::GetGameStatus(const Position &position) const
-{
-    return GameStatus::PLAY;
 }
 
 void RulesDraughts64::CalcAllJumps(const Position& position, const Piece& piece, Move move, std::vector<Move> &legalMoves) const

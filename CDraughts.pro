@@ -11,7 +11,6 @@ SOURCES += \
     board_draugths64.cpp \
     drawhelper.cpp \
     euristic_default.cpp \
-    evaluation_strategy.cpp \
         main.cpp \
     game.cpp \
     alphabeta.cpp \

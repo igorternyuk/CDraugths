@@ -1,11 +1,14 @@
 #pragma once
 
-enum class Alliance
+namespace draughts
 {
-    RED,
-    BLUE,
-    NONE
-};
+    enum class Alliance
+    {
+        RED,
+        BLUE,
+        NONE
+    };
 
-Alliance OpponentAlliance(Alliance& alliance);
-int DirectionOfAlliance(Alliance& alliance);
+    Alliance OpponentAlliance(Alliance& alliance);
+    int DirectionOfAlliance(Alliance& alliance);
+}

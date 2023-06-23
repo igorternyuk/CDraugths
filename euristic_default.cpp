@@ -1,5 +1,7 @@
 #include "euristic_default.hpp"
 
+using namespace draughts;
+
 EuristicDefault::EuristicDefault()
 {
 

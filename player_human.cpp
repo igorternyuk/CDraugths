@@ -1,6 +1,8 @@
 #include "player_human.hpp"
 #include "utils.hpp"
 
+using namespace draughts;
+
 PlayerHuman::PlayerHuman(Alliance alliance): Player(alliance)
 {
 }

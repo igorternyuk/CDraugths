@@ -1,5 +1,7 @@
 #include "piece.hpp"
 
+using namespace draughts;
+
 Piece Piece::NULL_PIECE = Piece();
 
 bool Piece::operator==(const Piece &piece) const

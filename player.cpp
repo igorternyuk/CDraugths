@@ -1,6 +1,8 @@
 #include "player.hpp"
 #include "alliance.hpp"
 
+using namespace draughts;
+
 Player::Player(Alliance alliance): _alliance(alliance)
 {
 
