@@ -25,6 +25,7 @@ void Board::Clear()
 
 void Board::Reset()
 {
+    _mapOfPieces.clear();
     _moveLog.clear();
     _bValidLegalMoves = false;
     _legalMoves.clear();
@@ -41,6 +42,22 @@ Tile &Board::GetTile(int row, int col)
 const std::map<int, Piece *> &Board::GetPieces(Alliance alliance) const
 {
     return _mapOfPieces.at(alliance);
+}
+
+void Board::SetupInitialPosition()
+{
+    const int BOARD_SIZE = GetBoardSize();
+    const int NUM_PIECES_FOR_ROW = GetNumPiecesForRow();
+    Reset();
+    Clear();
+    for(int y = 0; y < NUM_PIECES_FOR_ROW; ++y)
+        for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
+            SetPiece(y,x,Alliance::BLUE);
+
+
+    for(int y = BOARD_SIZE - NUM_PIECES_FOR_ROW; y < BOARD_SIZE; ++y)
+        for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
+            SetPiece(y,x,Alliance::RED);
 }
 
 void Board::SetTile(const Tile &tile, int row, int col)
@@ -89,12 +106,12 @@ bool Board::IsValidCoords(int row, int col) const
     return IsValidIndex(index);
 }
 
-void Board::CalcPieceCount(int &count_red_pieces, int &count_red_kings, int &count_blue_pieces, int &count_blue_kings) const
+void Board::CalcPieceCount(int aCount[]) const
 {
-    count_red_pieces = 0;
-    count_red_kings = 0;
-    count_blue_pieces = 0;
-    count_blue_kings = 0;
+    aCount[RED_PIECE] = 0;
+    aCount[RED_KING] = 0;
+    aCount[BLUE_PIECE] = 0;
+    aCount[BLUE_KING] = 0;
 
     auto redPieces = GetPieces(Alliance::RED);
     auto bluePieces = GetPieces(Alliance::BLUE);
@@ -103,41 +120,44 @@ void Board::CalcPieceCount(int &count_red_pieces, int &count_red_kings, int &cou
     {
         const Piece& piece = *p;
         if(piece.IsKing())
-            count_red_kings++;
+            aCount[RED_KING]++;
         else
-            count_red_pieces++;
+            aCount[RED_PIECE]++;
     }
-    const int BOARD_SIZE = GetBoardSize();
-    for(int y = 0; y < BOARD_SIZE; ++y)
+
+    for(const auto& [k,p] : bluePieces)
     {
-        for(int x = 0; x < BOARD_SIZE; ++x)
-        {
-            const Tile& tile = GetTile(y, x);
-            if(tile.HasPiece())
-            {
-                const Piece& piece = tile.GetPiece();
-                Alliance alliance = piece.GetAlliance();
-                bool isKing = piece.IsKing();
-                if(alliance == Alliance::RED)
-                {
-                    if(isKing)
-                        count_red_kings++;
-                    else
-                        count_red_pieces++;
-                }
-                else if(alliance == Alliance::BLUE)
-                {
-                    if(isKing)
-                        count_blue_kings++;
-                    else
-                        count_blue_pieces++;
-                }
-            }
-         }
+        const Piece& piece = *p;
+        if(piece.IsKing())
+            aCount[BLUE_KING]++;
+        else
+            aCount[BLUE_PIECE]++;
     }
 }
 
-bool Board::IsEndGameScenario() const
+std::string Board::MoveToNotation(const Move &move) const
+{
+    if(move.IsEmpty()) return "";
+    const Step& step = move.GetStep(0);
+    const Tile& tileStart = step.GetStart();
+    std::string notation = TileToNotation(tileStart);
+    const int stepCount = move.StepCount();
+    if(step.isJump())
+    {
+        for(int i = 0; i < stepCount; ++i)
+        {
+            notation += ":" + TileToNotation(step.GetEnd());
+        }
+    }
+    else
+    {
+        notation +=  "-" + TileToNotation(step.GetEnd());
+    }
+    return notation;
+}
+
+
+bool Board::IsEndgameScenario() const
 {
    return GetGameStatus() != GameStatus::PLAY;
 }
@@ -311,6 +331,46 @@ unsigned int Board::GetHash() const
         _bValidHash = true;
     }
     return _hash;
+}
+
+std::string Board::ToString() const
+{
+    const int BOARD_SIZE = GetBoardSize();
+    std::stringstream ss;
+    for(int y = 0; y < BOARD_SIZE; ++y)
+    {
+        std::string line;
+        for(int x = 0; x < BOARD_SIZE; ++x)
+        {
+            const Tile& tile = GetTile(y,x);
+            if(tile.HasPiece())
+            {
+                Piece p = tile.GetPiece();
+                if(p.GetAlliance() == Alliance::RED)
+                {
+                    line += p.IsKing() ? "[R]" : "[r]";
+                }
+                else if(p.GetAlliance() == Alliance::BLUE)
+                {
+                    line += p.IsKing() ? "[B]" : "[b]";
+                }
+            }
+            else
+            {
+                line += tile.IsDark() ?  "[.]" : "[ ]";
+            }
+        }
+        line += "\n";
+        ss << line;
+    }
+    return ss.str();
+}
+
+int Board::GetTotalPieces() const
+{
+    auto redPieces = GetPieces(Alliance::RED);
+    auto bluePieces = GetPieces(Alliance::BLUE);
+    return redPieces.size() + bluePieces.size();
 }
 
 void Board::LegalMoves(Alliance alliance, std::vector<Move> &moves) const

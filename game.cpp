@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "board_draugths64.hpp"
+#include "board_polish.hpp"
 #include "player_human.hpp"
 #include "player_alphabeta.hpp"
 #include "rules.hpp"
@@ -16,11 +17,9 @@ Game *Game::GetInstance()
     return &game;
 }
 
-Game::Game():_mode(Mode::CPU_HUMAN), _type(Type::DRAUGHTS64)
+Game::Game():_mode(Mode::HUMAN_CPU), _type(Type::POLISH)
 {
-    _board = std::make_shared<BoardDraugths64>();
-    _playerRed = std::make_shared<PlayerHuman>(Alliance::RED);
-    _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::BLUE, 6);
+   SetupNewGame(_type, _mode, OpponentStrength::eEASY);
 }
 
 Board &Game::GetBoard()
@@ -75,26 +74,36 @@ void Game::SwitchTurn()
 
 void Game::Play()
 {
-    SetupNewGame(_type, _mode);
-    Reset();
+    SetupNewGame(_type, _mode, _searchDepth);
 }
 
-void Game::SetupNewGame(Type type, Mode mode)
+void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
 {
     //TODO add all remaining game types
     if(type == Type::DRAUGHTS64)
     {
         _board = std::make_shared<BoardDraugths64>();
     }
+    else if(type == Type::POLISH)
+    {
+        _board = std::make_shared<BoardPolish>();
+    }
 
     if(mode == Mode::HUMAN_CPU)
     {
         _playerRed = std::make_shared<PlayerHuman>(Alliance::RED);
-        _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::BLUE, 8);
+        _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::BLUE, searchDepth);
+    }
+    else if(mode == Mode::CPU_HUMAN)
+    {
+        _playerRed = std::make_shared<PlayerAlphaBeta>(Alliance::BLUE, searchDepth);
+        _playerBlue = std::make_shared<PlayerHuman>(Alliance::RED);
     }
 
     _mode = mode;
     _type = type;
+    _searchDepth = searchDepth;
+    Reset();
 }
 
 void Game::PrintBoard()

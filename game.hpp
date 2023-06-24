@@ -13,8 +13,6 @@ namespace draughts
         {
             HUMAN_CPU,
             CPU_HUMAN,
-            CPU_CPU,
-            HUMAN_HUMAN
         };
 
         enum class Type
@@ -22,9 +20,18 @@ namespace draughts
             DRAUGHTS64,
             POLISH,
             BRAZILIAN,
+            CANADIAN,
             PORTUGUESE,
             CHECKRERS,
             TURKISH,
+        };
+
+        enum OpponentStrength
+        {
+            eVERY_EASY = 4,
+            eEASY = 6,
+            eMEDIUM = 8,
+            eHARD = 10,
         };
 
     private:
@@ -35,7 +42,7 @@ namespace draughts
         Game& operator=(Game&& game) = delete;
 
     public:
-        void SetupNewGame(Type type, Mode mode);
+        void SetupNewGame(Type type, Mode mode, int searchDepth = 8);
         void Play();
         Board &GetBoard();
         GameStatus GetStatus();
@@ -60,6 +67,7 @@ namespace draughts
         std::shared_ptr<Player> _playerBlue;
         Mode _mode;
         Type _type;
+        int _searchDepth;
         Alliance _turn = Alliance::RED;
         GameStatus _status = GameStatus::PLAY;
         Move _lastMove;

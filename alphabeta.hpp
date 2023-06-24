@@ -11,7 +11,7 @@ namespace draughts
     class MiniMaxAlphaBeta: public MoveStrategy
     {
     public:
-        explicit MiniMaxAlphaBeta(std::shared_ptr<EvaluationStrategy> evaluator, int depth = 10, bool log = true);
+        explicit MiniMaxAlphaBeta(std::shared_ptr<EvaluationStrategy> evaluator, int depth = 8, bool log = true);
         virtual Move GetBestMove(std::shared_ptr<Position> position, const Player& player) override;
     private:
         class Evaluation

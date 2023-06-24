@@ -1,6 +1,37 @@
 #include "rules.hpp"
+#include <algorithm>
 
 using namespace draughts;
+
+Alliance Rules::FirstMoveAlliance() const
+{
+    return Alliance::RED;
+}
+
+int Rules::GetPieceValue(const Piece &piece) const
+{
+    return piece.IsKing() ? KING_VALUE : PIECE_VALUE;
+}
+
+bool Rules::IsTileValid(const Position &position, const Tile &tile) const
+{
+     return tile.IsDark();
+}
+
+bool Rules::CheckIfCoronate(const Position &position, const Move &move) const
+{
+    bool coronation = false;
+    const int BOARD_SIZE = position.GetBoardSize();
+    const Step& step = move.GetLastStep();
+    const int ey = step.GetEnd().GetRow();
+    const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
+    if((piece.GetAlliance() == Alliance::RED && ey == 0)
+            || (piece.GetAlliance() == Alliance::BLUE && ey == BOARD_SIZE - 1))
+    {
+        coronation = true;
+    }
+    return coronation;
+}
 
 bool Rules::IsSubset(const Move &first, const Move &second) const
 {
@@ -22,4 +53,24 @@ bool Rules::IsSubset(const Move &first, const Move &second) const
         return true;
     }
     return false;
+}
+
+void Rules::RemoveSubsets(std::vector<Move> &moves) const
+{
+    int k = 1;
+    auto it = std::remove_if(moves.begin(), moves.end(), [&](auto &move)
+    {
+        for(int i = k; i < moves.size(); ++i)
+        {
+            if(IsSubset(move, moves[i]))
+            {
+                ++k;
+                return true;
+            }
+        }
+        ++k;
+        return false;
+    });
+
+    moves.erase(it, moves.end());
 }

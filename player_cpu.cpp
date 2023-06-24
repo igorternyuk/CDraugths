@@ -11,7 +11,7 @@ PlayerCPU::PlayerCPU(Alliance alliance, std::shared_ptr<MoveStrategy> strategy):
 Move PlayerCPU::MakeMove(const Position &position)
 {
     Move bestMove;
-    if(_moveStrategy)
+    if(!position.IsEndgameScenario() && _moveStrategy)
     {
         std::shared_ptr<Position> positionCopy = position.MakeCopy();
         bestMove = _moveStrategy->GetBestMove(positionCopy, *this);

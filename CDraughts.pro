@@ -9,6 +9,7 @@ SOURCES += \
     app.cpp \
     board_brazilian.cpp \
     board_draugths64.cpp \
+    board_polish.cpp \
     drawhelper.cpp \
     euristic_default.cpp \
         main.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     app.hpp \
     board_brazilian.hpp \
     board_draugths64.hpp \
+    board_polish.hpp \
     drawhelper.hpp \
     euristic_default.hpp \
     evaluation_strategy.hpp \

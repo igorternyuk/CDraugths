@@ -72,7 +72,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             }
             std::cout << std::endl;*/
 
-            std::string curr_line = position->MoveToAlgebraicNotation(*it);
+            std::string curr_line = position->MoveToNotation(*it);
             std::shared_ptr<Position> positionCopy = position->MakeCopy();
             Evaluation currVal = max(positionCopy, this->_searchDepth, alpha, beta, curr_line);
             //beta = std::min(beta, minVal);
@@ -91,24 +91,24 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
 
             if(_log)
             {
-                std::cout << "Analyzed move " + position->MoveToAlgebraicNotation(*it)
+                std::cout << "Analyzed move " + position->MoveToNotation(*it)
                           << " Score: " << currVal.score << " Time taken: "
                           << elapsed << "ms" << std::endl;
                 std::cout << "Best line:\n";
                 std::vector<std::string> v_best_line = Utils::split(currVal.best_line, " ");
-
-                for(size_t i = 0; i < v_best_line.size(); ++i)
+                const size_t N = v_best_line.size();
+                for(int i = 0; i < N; ++i)
                 {
-                    std::cout << v_best_line[i];
                     if(i % 2 == 0)
+                    {
+                        std::cout << (i == 0 ? "... " : " ");
+                    }
+                    else
                     {
                         ++number;
                         std::cout << " " << number << ". ";
                     }
-                    else
-                    {
-                        std::cout << (i == 1 ? "... " : " ");
-                    }
+                    std::cout << v_best_line[i];
                 }
 
                 std::cout << "\n";
@@ -124,7 +124,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             int number = moveNumber;
             std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
             position->MakeMove(*it); //CPU make the move
-            std::string curr_line = position->MoveToAlgebraicNotation(*it);
+            std::string curr_line = position->MoveToNotation(*it);
             std::shared_ptr<Position> positionCopy = position->MakeCopy();
             Evaluation currVal = min(positionCopy, this->_searchDepth, alpha, beta, curr_line);
             //beta = std::min(beta, minVal);
@@ -143,24 +143,24 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
 
             if(_log)
             {
-                std::cout << "Analyzed move " + position->MoveToAlgebraicNotation(*it)
+                std::cout << "Analyzed move " + position->MoveToNotation(*it)
                           << " Score: " << currVal.score << " Time taken: "
                           << elapsed << "ms" << std::endl;
                 std::cout << "Best line:\n";
                 std::vector<std::string> v_best_line = Utils::split(currVal.best_line, " ");
 
-                for(size_t i = 0; i < v_best_line.size(); ++i)
+                for(int i = 0; i < v_best_line.size(); ++i)
                 {
-                    std::cout << v_best_line[i];
                     if(i % 2 == 0)
+                    {
+                        std::cout << (i == 0 ? "... " : " ");
+                    }
+                    else
                     {
                         ++number;
                         std::cout << " " << number << ". ";
                     }
-                    else
-                    {
-                        std::cout << (i == 1 ? "... " : " ");
-                    }
+                    std::cout << v_best_line[i];
                 }
 
                 std::cout << "\n";
@@ -173,7 +173,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
     {
         std::cout << "boardEvaluated_ = " << _boardEvaluated << std::endl;
         std::cout << "cutoffsProduced_ = " << _cutoffsProduced << std::endl;
-        std::cout << "Best move  = " + position->MoveToAlgebraicNotation(bestMove) << std::endl;
+        std::cout << "Best move  = " + position->MoveToNotation(bestMove) << std::endl;
         std::cout << "Total move time = " << totalMoveTime << "ms" << std::endl;
     }
 
@@ -206,7 +206,7 @@ MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::max(std::shared_ptr<Position> pos
     {
         position->MakeMove(*it);
         std::stringstream ss;
-        ss << curr_line << std::string(" ") <<  position->MoveToAlgebraicNotation(*it);
+        ss << curr_line << std::string(" ") <<  position->MoveToNotation(*it);
         std::string line = ss.str();
         std::shared_ptr<Position> positionCopy = position->MakeCopy();
         Evaluation evaluation = min(positionCopy, CalculateQuiescenceDepth(*positionCopy, depth), alpha, beta, line);
@@ -254,7 +254,7 @@ MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::min(std::shared_ptr<Position> pos
     {
         position->MakeMove(*it);
         std::stringstream ss;
-        ss << curr_line << std::string(" ") << position->MoveToAlgebraicNotation(*it);
+        ss << curr_line << std::string(" ") << position->MoveToNotation(*it);
         std::string line = ss.str();
         std::shared_ptr<Position> positionCopy = position->MakeCopy();
         Evaluation evaluation = max(positionCopy, CalculateQuiescenceDepth(*positionCopy, depth), alpha, beta, line);

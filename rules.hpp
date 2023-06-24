@@ -10,13 +10,25 @@ namespace draughts
     public:
         virtual ~Rules() {};
     public:
-        virtual Alliance FirstMoveAlliance() const = 0;
-        virtual int GetPieceValue(const Piece& piece) const = 0;
-        virtual bool IsTileValid(const Position& position, const Tile& tile) const = 0;
         virtual void CalcLegalMoves(const Position& position, Alliance alliance, std::vector<Move> &moves) const = 0;
-        virtual bool CheckIfCoronate(const Position& position, const Move& move) const = 0;
+        virtual Alliance FirstMoveAlliance() const;
+        virtual int GetPieceValue(const Piece& piece) const;
+        virtual bool IsTileValid(const Position& position, const Tile& tile) const;
+        virtual bool CheckIfCoronate(const Position& position, const Move& move) const;
     protected:
+        virtual void CalcAllJumps(const Position& position, const Piece& piece, Move move, std::vector<Move> &legalMoves) const = 0;
         bool IsSubset(const Move &first, const Move &second) const;
+        void RemoveSubsets(std::vector<Move>& moves) const;
+
+    protected:
+        enum PieceValues
+        {
+            PIECE_VALUE = 100,
+            KING_VALUE = 300,
+        };
+
+        inline static constexpr int offsetX_[8] { +1, +1, -1, -1, -1, +1, 0, 0 };
+        inline static constexpr int offsetY_[8] { -1, +1, +1, -1, 0, 0, -1, +1 };
     };
 }
 

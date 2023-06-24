@@ -6,6 +6,6 @@ namespace draughts
     class PlayerAlphaBeta : public PlayerCPU
     {
     public:
-        PlayerAlphaBeta(Alliance alliance, int depth = 10);
+        PlayerAlphaBeta(Alliance alliance, int depth = 8);
     };
 }

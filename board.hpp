@@ -22,6 +22,12 @@ namespace draughts
     public:
         explicit Board(std::shared_ptr<Rules>, int N);
     public:
+        enum class Notation
+        {
+            ALGEBRAIC,
+            NUMERIC,
+        };
+    public:
         ////// Interface Posiiton begin //////
 
         virtual const Tile& GetTile(int row, int col) const override;
@@ -36,18 +42,30 @@ namespace draughts
 
         ////// Interface Posiiton end //////
 
-        virtual void SetupInitialPosition() = 0;
-        virtual std::string TileToAlgebraicNotation(const Tile& tile) const = 0;
+        virtual void SetupInitialPosition();
+        virtual int GetNumPiecesForRow() const = 0;
+        virtual Notation GetNotation() const = 0;
+        virtual std::string TileToNotation(const Tile& tile) const = 0;
+        virtual std::string MoveToNotation(const Move& move) const override;
         virtual unsigned int GetHash() const override;
+         virtual std::string ToString() const override;
 
+        virtual int GetTotalPieces() const override;
         bool HasValidTile(int row, int col) const;
         bool IsTileEmpty(int row, int col) const;
         bool SetPiece(int row, int col, Alliance alliance, bool isKing = false);
-        bool IsEndGameScenario() const;
+        virtual bool IsEndgameScenario() const override;
         virtual GameStatus GetGameStatus() const;
         Tile &GetTile(int row, int col);
 
-
+    protected:
+        enum PieceType
+        {
+            RED_PIECE = 0,
+            RED_KING = 1,
+            BLUE_PIECE = 2,
+            BLUE_KING = 3,
+        };
     protected:
         void Clear();
         void Reset();
@@ -58,7 +76,7 @@ namespace draughts
         std::pair<int,int> CoordsByIndex(int index) const;
         bool IsValidIndex(int index) const;
         bool IsValidCoords(int row, int col) const;
-        void CalcPieceCount(int &count_red_pieces, int &count_red_kings, int &count_blue_pieces, int &count_blue_kings) const;
+        void CalcPieceCount(int aCount[4]) const;
     protected:
         std::vector<Tile> _grid;
         std::shared_ptr<Rules> _rules;

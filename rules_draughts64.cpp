@@ -3,42 +3,10 @@
 
 using namespace draughts;
 
+
 RulesDraughts64::RulesDraughts64()
 {
 
-}
-
-Alliance RulesDraughts64::FirstMoveAlliance() const
-{
-    return Alliance::RED;
-}
-
-int RulesDraughts64::GetPieceValue(const Piece &piece) const
-{
-    return piece.IsKing() ? KING_VALUE : PIECE_VALUE;
-}
-
-bool RulesDraughts64::IsTileValid(const Position& position, const Tile& tile) const
-{
-    /*bool rc = false;
-    if(tile.IsDark())
-    {
-        Alliance turn = position.GetTurn();
-        const int row = tile.GetRow();
-        const int col = tile.GetCol();
-        if(position.GetTile(row, col) == tile)
-        {
-            if(tile.IsEmpty())
-                rc = true;
-            else
-            {
-                const Piece& piece = tile.GetPiece();
-                rc = piece.GetAlliance() == turn;
-            }
-        }
-    }*/
-
-    return tile.IsDark();
 }
 
 void RulesDraughts64::CalcLegalMoves(const Position &position, Alliance alliance, std::vector<Move> &moves) const
@@ -55,22 +23,7 @@ void RulesDraughts64::CalcLegalMoves(const Position &position, Alliance alliance
 
     if(!moves.empty())
     {
-        int k = 1;
-        auto it = std::remove_if(moves.begin(), moves.end(), [&](auto &move)
-        {
-            for(int i = k; i < moves.size(); ++i)
-            {
-                if(IsSubset(move, moves[i]))
-                {
-                    ++k;
-                    return true;
-                }
-            }
-            ++k;
-            return false;
-        });
-
-        moves.erase(it, moves.end());
+        RemoveSubsets(moves);
         return;
     }
 
@@ -124,22 +77,7 @@ void RulesDraughts64::CalcLegalMoves(const Position &position, Alliance alliance
     }
 }
 
-bool RulesDraughts64::CheckIfCoronate(const Position &position, const Move &move) const
-{
-    bool coronation = false;
-    const int BOARD_SIZE = position.GetBoardSize();
-    const Step& step = move.GetLastStep();
-    const int ey = step.GetEnd().GetRow();
-    const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
-    if((piece.GetAlliance() == Alliance::RED && ey == 0)
-            || (piece.GetAlliance() == Alliance::BLUE && ey == BOARD_SIZE - 1))
-    {
-        coronation = true;
-    }
-    return coronation;
-}
-
-void RulesDraughts64::CalcAllJumps(const Position& position, const Piece& piece, Move move, std::vector<Move> &legalMoves) const
+void RulesDraughts64::CalcAllJumps(const Position &position, const Piece &piece, Move move, std::vector<Move> &legalMoves) const
 {
     int px = piece.GetCol();
     int py = piece.GetRow();

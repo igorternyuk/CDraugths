@@ -23,7 +23,7 @@ namespace draughts
         virtual void LegalMoves(Alliance alliance, std::vector<Move>& lolm) const = 0;
         virtual bool HasAvailableTile(int row, int col) const = 0;
         virtual std::shared_ptr<Rules> GetRules() const = 0;
-        virtual std::string MoveToAlgebraicNotation(const Move& move) const = 0;
+        virtual std::string MoveToNotation(const Move& move) const = 0;
         virtual const std::vector<Move>& GetMoveLog() const = 0;
         virtual std::string ToString() const = 0;
         virtual int GetTotalPieces() const = 0;
