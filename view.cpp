@@ -1,6 +1,6 @@
 #include "view.hpp"
 #include "player_human.hpp"
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <iostream>
 
 #define KEY_RETURN 13
@@ -24,6 +24,23 @@ void View::FlippedCoordinates(int x, int y, int &fx, int &fy)
 void View::FlipBoard()
 {
     _bRotateBoard = !_bRotateBoard;
+}
+
+int View::SearchDepthByLevel(int level)
+{
+    switch(level)
+    {
+        case Game::Level::eVERY_EASY:
+            return 4;
+        case Game::Level::eEASY:
+            return 6;
+        case Game::Level::eMEDIUM:
+            return 8;
+        case Game::Level::eHARD:
+            return 10;
+        default:
+            return 6;
+    };
 }
 
 View* View::GetInstance()
@@ -78,8 +95,30 @@ void View::OnMouseEvent(int button, int state, int x, int y)
         {
             if(button == GLUT_LEFT_BUTTON)
             {
+                _viewMode = ViewMode::eMenuGameMode;
+                //glutPostRedisplay();
+            }
+        }
+    }
+    else if(_viewMode == ViewMode::eMenuGameMode)
+    {
+        if(state == GLUT_DOWN)
+        {
+            if(button == GLUT_LEFT_BUTTON)
+            {
+                _viewMode = ViewMode::eMenuLevel;
+                //glutPostRedisplay();
+            }
+        }
+    }
+    else if(_viewMode == ViewMode::eMenuLevel)
+    {
+        if(state == GLUT_DOWN)
+        {
+            if(button == GLUT_LEFT_BUTTON)
+            {
                 _viewMode = ViewMode::eBoard;
-                _game->SetupNewGame((Game::Type)_selectedGameMode, Game::Mode::HUMAN_CPU, 6);
+                _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, SearchDepthByLevel(_selectedLevel));
 
                 const int width = GetWindowWidth();
                 const int height = GetWindowHeight();
@@ -93,28 +132,68 @@ void View::OnMouseEvent(int button, int state, int x, int y)
             }
         }
     }
-
 }
 
 void View::OnMouseMotion(int x, int y)
 {
-    _selectedGameMode = std::min(3, ((y - 80) / 25));
+    if(_viewMode == ViewMode::eMenuGameType)
+    {
+        _selectedGameType = std::max(0, std::min(3, ((y - 120) / 20)));
+    }
+    else if(_viewMode == ViewMode::eMenuGameMode)
+    {
+         _selectedGameMode = std::max(0, std::min(1, ((y - 60) / 20)));
+         if(_selectedGameMode == (int)draughts::Game::Mode::CPU_HUMAN)
+             _bRotateBoard = true;
+         else
+             _bRotateBoard = false;
+
+    }
+    else if(_viewMode == ViewMode::eMenuLevel)
+    {
+         _selectedLevel = std::max(0, std::min(3, ((y - 60) / 20)));
+    }
 }
 
 void View::DrawGameTypeMenu()
 {
-    DrawHelper::DrawWord("SELECT GAME TYPE:", 70, 20, 20, _colorMenuTitle);
-    const char* menuItems[] { "DRAUGTHS64", "POLISH", "BRAZILIAN", "CANADIAN" };
+   // glClearColor(0,0,0,0);
+    int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameType.size()) / 2;
+    DrawHelper::DrawWord(_sMenuTitleGameType.c_str(), titleLeftX, 40, 20, {0, 233, 0});
+    int titleLeftX2 = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameType2.size()) / 2;
+    DrawHelper::DrawWord(_sMenuTitleGameType2.c_str(), titleLeftX2, 80, 20, _colorMenuTitle);
 
-    for(int i = 0; i < 4; ++i)
+    for(int i = 0; i < draughts::Game::NUM_OF_GAME_TYPES; ++i)
     {
-        DrawHelper::DrawWord(menuItems[i], SCREEN_WIDTH / 4, 80 + i * 40, 20, i == _selectedGameMode ? _colorMenuItemSelected : _colorMenuItem);
+        int leftX = (GetDefaultWindowWidth() - 20 * _menuItemsGameType[i].size()) / 2;
+        DrawHelper::DrawWord(_menuItemsGameType[i].c_str(), leftX, 120 + i * 30, 20, i == _selectedGameType ? _colorMenuItemSelected : _colorMenuItem);
     }
 }
 
 void View::DrawGameModeMenu()
 {
-    DrawHelper::DrawWord("RED PLAYER WON!", 5, 20, 20, {255,0,0});
+    //glClearColor(0,0,0,0);
+    int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameMode.size()) / 2;
+    DrawHelper::DrawWord(_sMenuTitleGameMode.c_str(), titleLeftX, 20, 20, {0, 233, 0});
+
+    for(int i = 0; i < 2; ++i)
+    {
+        int leftX = (GetDefaultWindowWidth() - 20 * _menuItemsGameMode[i].size()) / 2;
+        DrawHelper::DrawWord(_menuItemsGameMode[i].c_str(), leftX, 60 + i * 30, 20, i == _selectedGameMode ? _colorMenuItemSelected : _colorMenuItem);
+    }
+}
+
+void View::DrawLevelMenu()
+{
+    //glClearColor(0,0,0,0);
+    int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleLevel.size()) / 2;
+    DrawHelper::DrawWord(_sMenuTitleLevel.c_str(), titleLeftX, 20, 20, {0, 233, 0});
+
+    for(int i = 0; i < 4; ++i)
+    {
+        int leftX = (GetDefaultWindowWidth() - 20 * _menuItemsLevel[i].size()) / 2;
+        DrawHelper::DrawWord(_menuItemsLevel[i].c_str(), leftX, 60 + i * 30, 20, i == _selectedLevel ? _colorMenuItemSelected : _colorMenuItem);
+    }
 }
 
 void View::OnKeyboardEvent(unsigned char key, int x, int y)
@@ -125,29 +204,33 @@ void View::OnKeyboardEvent(unsigned char key, int x, int y)
     int height = GetWindowHeight();
     if(key == KEY_RETURN)//enter
     {
-        _game->Play();
-    }
-    else if(key == ' ')
-    {
-        std::cout << "Last move undo" << std::endl;
-        _game->UndoLastMove();
-    }
-    else if(key == '1')
-    {
-        _game->SetupNewGame(Game::Type::DRAUGHTS64, Game::Mode::CPU_HUMAN, 6);
-        bNeedToResizeWindow = true;
-    }
-    else if(key == '2')
-    {
-        _game->SetupNewGame(Game::Type::POLISH, Game::Mode::HUMAN_CPU, 6);
-        _bRotateBoard = false;
-        bNeedToResizeWindow = true;
-    }
-    else if(key == '3')
-    {
-        _game->SetupNewGame(Game::Type::POLISH, Game::Mode::CPU_HUMAN, 6);
-        _bRotateBoard = true;
-        bNeedToResizeWindow = true;
+        if(_viewMode == ViewMode::eBoard)
+        {
+            _game->Play();
+        }
+        else if(_viewMode == ViewMode::eMenuGameType)
+        {
+            _viewMode = ViewMode::eMenuGameMode;
+        }
+        else if(_viewMode == ViewMode::eMenuGameMode)
+        {
+            _viewMode = ViewMode::eMenuLevel;
+        }
+        else if(_viewMode == ViewMode::eMenuLevel)
+        {
+            _viewMode = ViewMode::eBoard;
+            _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, _selectedLevel);
+
+            const int width = GetWindowWidth();
+            const int height = GetWindowHeight();
+
+            glViewport(0, 0, width, height);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(0,width,height,0,-1,1);
+            glutReshapeWindow(width, height);
+            glutPostRedisplay();
+        }
     }
     else if(key == 'r')
     {
@@ -176,6 +259,49 @@ void View::OnKeyboardEvent(unsigned char key, int x, int y)
     }
 }
 
+void View::ProcessSpecialKeys(unsigned char key, int x, int y)
+{
+    if(key == GLUT_KEY_UP)
+    {
+        if(_viewMode == ViewMode::eMenuGameType)
+        {
+            --_selectedGameType;
+            if(_selectedGameType < 0)
+                _selectedGameType =(int)draughts::Game::CANADIAN;
+        }
+        else if(_viewMode == ViewMode::eMenuGameMode)
+        {
+            --_selectedGameMode;
+            if(_selectedGameMode < 0)
+                _selectedGameMode = 1;
+        }
+        else if(_viewMode == ViewMode::eMenuLevel)
+        {
+            --_selectedLevel;
+            if(_selectedLevel < 0)
+                _selectedLevel = 3;
+        }
+    }
+    else if(key == GLUT_KEY_DOWN)//enter
+    {
+        if(_viewMode == ViewMode::eMenuGameType)
+        {
+            ++_selectedGameType;
+            _selectedGameType %= (int)draughts::Game::NUM_OF_GAME_TYPES;
+        }
+        else if(_viewMode == ViewMode::eMenuGameMode)
+        {
+            ++_selectedGameMode;
+            _selectedGameMode %= 2;
+        }
+        else if(_viewMode == ViewMode::eMenuLevel)
+        {
+            ++_selectedLevel;
+            _selectedLevel %= 4;
+        }
+    }
+}
+
 void View::Update()
 {
     _game->Update();
@@ -190,6 +316,10 @@ void View::Render()
     else if(_viewMode == ViewMode::eMenuGameMode)
     {
         DrawGameModeMenu();
+    }
+    else if(_viewMode == ViewMode::eMenuLevel)
+    {
+        DrawLevelMenu();
     }
     else
     {

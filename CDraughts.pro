@@ -8,7 +8,9 @@ SOURCES += \
     alliance.cpp \
     app.cpp \
     board_brazilian.cpp \
+    board_canadian.cpp \
     board_draugths64.cpp \
+    board_international.cpp \
     board_polish.cpp \
     drawhelper.cpp \
     euristic_default.cpp \
@@ -36,7 +38,9 @@ HEADERS += \
     alliance.hpp \
     app.hpp \
     board_brazilian.hpp \
+    board_canadian.hpp \
     board_draugths64.hpp \
+    board_international.hpp \
     board_polish.hpp \
     drawhelper.hpp \
     euristic_default.hpp \

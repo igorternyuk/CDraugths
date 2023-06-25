@@ -1,8 +1,8 @@
-#include "board_polish.hpp"
+#include "board_canadian.hpp"
 
 using namespace draughts;
 
-BoardPolish::BoardPolish(): BoardInternational(BOARD_SIZE)
+BoardCanadian::BoardCanadian(): BoardInternational(BOARD_SIZE)
 {
     int k = 0;
     for(int r = 0; r < BOARD_SIZE; ++r)
@@ -20,22 +20,22 @@ BoardPolish::BoardPolish(): BoardInternational(BOARD_SIZE)
     BoardInternational::SetupInitialPosition();
 }
 
-std::shared_ptr<Position> BoardPolish::MakeCopy() const
+std::shared_ptr<Position> BoardCanadian::MakeCopy() const
 {
-    return std::make_shared<BoardPolish>(*this);
+    return std::make_shared<BoardCanadian>(*this);
 }
 
-int BoardPolish::GetBoardSize() const
+int BoardCanadian::GetBoardSize() const
 {
     return BOARD_SIZE;
 }
 
-int BoardPolish::GetNumPiecesForRow() const
+int BoardCanadian::GetNumPiecesForRow() const
 {
     return NUM_PIECE_ROWS;
 }
 
-Board::Notation BoardPolish::GetNotation() const
+Board::Notation BoardCanadian::GetNotation() const
 {
     return Notation::NUMERIC;
 }

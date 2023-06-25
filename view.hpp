@@ -11,14 +11,15 @@ namespace view
         enum
         {
             TILE_SIZE_PX = 100,
-            SCREEN_WIDTH = 480,
-            SCREEN_HEIGHT = 480,
+            SCREEN_WIDTH = 660,
+            SCREEN_HEIGHT = 660,
         };
     public:
 
         void OnMouseEvent(int button, int state, int x, int y);
         void OnMouseMotion(int x, int y);
         void OnKeyboardEvent(unsigned char key, int x, int y);
+        void ProcessSpecialKeys(unsigned char key, int x, int y);
         void Update();
         void Render();
     public:
@@ -40,12 +41,13 @@ namespace view
         {
             eMenuGameType,
             eMenuGameMode,
-            eMenuOpponentStrength,
+            eMenuLevel,
             eBoard,
         };
     private:
         void FlippedCoordinates(int x, int y, int& fx, int& fy);
         void FlipBoard();
+        int  SearchDepthByLevel(int level);
         void HighlightLastMove();
         void HighlightLegalMoves();
         void DrawGameStatus();
@@ -57,12 +59,23 @@ namespace view
         void DrawCrown(const draughts::Piece& piece, DrawHelper::Color color);
         void DrawGameTypeMenu();
         void DrawGameModeMenu();
+        void DrawLevelMenu();
     private:
         draughts::Game * _game;
         bool _bShowNotation = true;
         bool _bRotateBoard = false;
         ViewMode _viewMode = ViewMode::eMenuGameType;
-        int _selectedGameMode = 0;
+        int _selectedGameType = (int)draughts::Game::Type::POLISH;
+        int _selectedGameMode = (int)draughts::Game::Mode::HUMAN_CPU;
+        int _selectedLevel = (int)draughts::Game::Level::eEASY;
+        const std::string _sMenuTitleGameType = "WELLCOME TO THE GAME OF DRAUGHTS!";
+        const std::string _sMenuTitleGameType2 = "SELECT GAME TYPE:";
+        const std::string _menuItemsGameType[draughts::Game::NUM_OF_GAME_TYPES] { "DRAUGTHS64", "POLISH", "BRAZILIAN", "CANADIAN" };
+        const std::string _sMenuTitleGameMode = "SELECT GAME MODE:";
+        const std::string _menuItemsGameMode[2] { "PLAY WITH RED PIECES", "PLAY WITH BLUE PIECES",  };
+        const std::string _sMenuTitleLevel= "SELECT OPPONENT STRENGTH:";
+        const std::string _menuItemsLevel[4] { "VERY EASY", "EASY", "MEDIUM", "HARD" };
+
         DrawHelper::Color _colorNotation = {9, 65, 50};
         //const DrawHelper::Color colorLight = {255, 255, 136};
         const DrawHelper::Color _colorTileLight = {245, 245, 245};

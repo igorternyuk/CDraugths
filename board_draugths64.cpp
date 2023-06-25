@@ -5,18 +5,6 @@
 
 using namespace draughts;
 
-static std::map<int, std::string> algebraicNotaionFileMap
-{
-    { 0, "a"},
-    { 1, "b"},
-    { 2, "c"},
-    { 3, "d"},
-    { 4, "e"},
-    { 5, "f"},
-    { 6, "g"},
-    { 7, "h"}
-};
-
 BoardDraugths64::BoardDraugths64(): Board(std::make_shared<RulesDraughts64>(), BOARD_SIZE)
 {
     for(int r = 0; r < BOARD_SIZE; ++r)
@@ -29,6 +17,37 @@ BoardDraugths64::BoardDraugths64(): Board(std::make_shared<RulesDraughts64>(), B
             }
         }
     SetupInitialPosition();
+}
+
+void BoardDraugths64::SetupInitialPosition()
+{
+    Board::SetupInitialPosition();
+    //SetupTestPosition();
+}
+
+void BoardDraugths64::SetupTestPosition()
+{
+    Reset();
+    Clear();
+    SetPiece(0,3,Alliance::RED, false);
+    SetPiece(0,7,Alliance::RED, false);
+    SetPiece(1,4,Alliance::RED, false);
+    SetPiece(1,6,Alliance::RED, false);
+    SetPiece(2,3,Alliance::RED, false);
+    SetPiece(2,5,Alliance::RED, false);
+    SetPiece(2,7,Alliance::RED, false);
+    SetPiece(5,0,Alliance::RED, false);
+    SetPiece(3,0,Alliance::RED, false);
+
+
+    SetPiece(4,1,Alliance::BLUE, false);
+    SetPiece(4,3,Alliance::BLUE, false);
+    SetPiece(4,5,Alliance::BLUE, false);
+    SetPiece(4,7,Alliance::BLUE, false);
+    SetPiece(5,4,Alliance::BLUE, false);
+    SetPiece(6,5,Alliance::BLUE, false);
+    SetPiece(7,0,Alliance::BLUE, false);
+    SetPiece(7,2,Alliance::BLUE, false);
 }
 
 std::shared_ptr<Position> BoardDraugths64::MakeCopy() const
@@ -153,7 +172,7 @@ GameStatus BoardDraugths64::GetGameStatus() const
         return GameStatus::DRAW;
     }
 
-    if(_moveLog.size() > 30)
+    if(_moveLog.size() >= 30)
     {
         int count = 0;
         for(auto it = _moveLog.rbegin(); it != _moveLog.rend(); ++it)
@@ -181,6 +200,6 @@ std::string BoardDraugths64::TileToNotation(const Tile &tile) const
 {
     int row = tile.GetRow();
     int col = tile.GetCol();
-    return algebraicNotaionFileMap[col] + std::to_string(BOARD_SIZE - row);
+    return _mapAlgebraicNotaion[col] + std::to_string(BOARD_SIZE - row);
 }
 

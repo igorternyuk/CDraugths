@@ -11,5 +11,5 @@ int draughts::DirectionOfAlliance(Alliance &alliance)
 {
     if(alliance == Alliance::NONE)
         return 0;
-    return alliance == Alliance::RED ? -1 : 1;
+    return alliance == Alliance::RED ? 1 : -1;
 }

@@ -1,6 +1,6 @@
 #include "app.hpp"
 #include "view.hpp"
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <iostream>
 #include <algorithm>
 #include <iostream>
@@ -9,10 +9,6 @@ using namespace view;
 
 #define WINDOW_TITLE "CDraughts"
 
-/*
-void glutMotionFunc(void (*func)(int x, int y));
-void glutPassiveMotionFunc(void (*func)(int x, int y));
-*/
 void App::Run(int argc, char *argv[])
 {
     glutInit(&argc, argv);
@@ -21,18 +17,19 @@ void App::Run(int argc, char *argv[])
     int screenHeight = glutGet(GLUT_SCREEN_HEIGHT);
     int WINDOW_WIDTH = View::GetDefaultWindowWidth(); //View::GetWindowWidth();
     int WINDOW_HEIGHT = View::GetDefaultWindowHeight(); //View::GetWindowHeight();
-    glutInitWindowSize(WINDOW_WIDTH, WINDOW_WIDTH);
+    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
     glutInitWindowPosition((screenWidth - WINDOW_WIDTH) / 2, (screenHeight - WINDOW_HEIGHT) / 2);
     glutCreateWindow(WINDOW_TITLE);
     glClearColor(0,0,0,0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0,WINDOW_WIDTH,WINDOW_HEIGHT,0,-1,1);
-    glutDisplayFunc(&App::DisplayFunc);
-    glutMouseFunc(&App::MouseFunc);
-    glutTimerFunc(500, &App::Timer, 0);
-    glutKeyboardFunc(&App::KeyboardFunc);
-    glutPassiveMotionFunc(&App::MouseMotionFunc);
+    glutDisplayFunc(App::DisplayFunc);
+    glutMouseFunc(App::MouseFunc);
+    glutTimerFunc(500, App::Timer, 0);
+    glutKeyboardFunc(App::KeyboardFunc);
+    glutSpecialFunc(App::ProcessSpecialKeys);
+    glutPassiveMotionFunc(App::MouseMotionFunc);
     glutMainLoop();
 }
 
@@ -73,4 +70,10 @@ void App::MouseMotionFunc(int x, int y)
 {
     View* view = View::GetInstance();
     view->OnMouseMotion(x, y);
+}
+
+void App::ProcessSpecialKeys(int key, int x, int y)
+{
+    View* view = View::GetInstance();
+    view->ProcessSpecialKeys(key, x, y);
 }

@@ -52,12 +52,12 @@ void Board::SetupInitialPosition()
     Clear();
     for(int y = 0; y < NUM_PIECES_FOR_ROW; ++y)
         for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
-            SetPiece(y,x,Alliance::BLUE);
+            SetPiece(y,x,Alliance::RED);
 
 
     for(int y = BOARD_SIZE - NUM_PIECES_FOR_ROW; y < BOARD_SIZE; ++y)
         for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
-            SetPiece(y,x,Alliance::RED);
+            SetPiece(y,x,Alliance::BLUE);
 }
 
 void Board::SetTile(const Tile &tile, int row, int col)
@@ -165,21 +165,21 @@ bool Board::IsEndgameScenario() const
 GameStatus Board::GetGameStatus() const
 {
     Alliance turn = GetTurn();
-    if(turn == Alliance::RED)
-    {
-        std::vector<Move> redMoves;
-        _rules->CalcLegalMoves(*this, Alliance::RED, redMoves);
-        if(redMoves.empty())
-            return GameStatus::BLUE_WON;
-    }
-    else if(turn == Alliance::BLUE)
+
+    if(turn == Alliance::BLUE)
     {
         std::vector<Move> blueMoves;
         _rules->CalcLegalMoves(*this, Alliance::BLUE, blueMoves);
         if(blueMoves.empty())
             return GameStatus::RED_WON;
     }
-
+    else if(turn == Alliance::RED)
+    {
+       std::vector<Move> redMoves;
+       _rules->CalcLegalMoves(*this, Alliance::RED, redMoves);
+       if(redMoves.empty())
+           return GameStatus::BLUE_WON;
+    }
     return GameStatus::PLAY;
 }
 

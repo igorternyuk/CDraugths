@@ -11,27 +11,28 @@ namespace draughts
         static Game* GetInstance();
         enum class Mode
         {
-            HUMAN_CPU,
             CPU_HUMAN,
+            HUMAN_CPU,           
         };
 
-        enum class Type
+        enum Type
         {
             DRAUGHTS64,
             POLISH,
             BRAZILIAN,
             CANADIAN,
-            PORTUGUESE,
+            /*PORTUGUESE,
             CHECKRERS,
-            TURKISH,
+            TURKISH,*/
+            NUM_OF_GAME_TYPES,
         };
 
-        enum OpponentStrength
+        enum Level
         {
-            eVERY_EASY = 4,
-            eEASY = 6,
-            eMEDIUM = 8,
-            eHARD = 10,
+            eVERY_EASY,
+            eEASY,
+            eMEDIUM,
+            eHARD,
         };
 
     private:
@@ -68,7 +69,7 @@ namespace draughts
         Mode _mode;
         Type _type;
         int _searchDepth;
-        Alliance _turn = Alliance::RED;
+        Alliance _turn = Alliance::BLUE;
         GameStatus _status = GameStatus::PLAY;
         Move _lastMove;
     };

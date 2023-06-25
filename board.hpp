@@ -86,5 +86,6 @@ namespace draughts
         mutable std::vector<Move> _legalMoves;
         mutable bool _bValidHash;
         mutable unsigned int _hash;
+        bool _log = true;
     };
 }

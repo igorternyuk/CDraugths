@@ -3,10 +3,10 @@
 
 namespace draughts
 {
-    class BoardPolish: public BoardInternational
+    class BoardCanadian: public BoardInternational
     {
     public:
-        BoardPolish();
+        BoardCanadian();
     public:
         virtual std::shared_ptr<Position> MakeCopy() const override;
         virtual int GetBoardSize() const override;
@@ -15,9 +15,10 @@ namespace draughts
     public:
         enum
         {
-            BOARD_SIZE = 10,
-            NUM_PIECE_ROWS = 4,
+            BOARD_SIZE = 12,
+            NUM_PIECE_ROWS = 5,
         };
     };
 }
+
 

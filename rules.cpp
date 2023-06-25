@@ -5,7 +5,7 @@ using namespace draughts;
 
 Alliance Rules::FirstMoveAlliance() const
 {
-    return Alliance::RED;
+    return Alliance::BLUE;
 }
 
 int Rules::GetPieceValue(const Piece &piece) const
@@ -25,8 +25,8 @@ bool Rules::CheckIfCoronate(const Position &position, const Move &move) const
     const Step& step = move.GetLastStep();
     const int ey = step.GetEnd().GetRow();
     const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
-    if((piece.GetAlliance() == Alliance::RED && ey == 0)
-            || (piece.GetAlliance() == Alliance::BLUE && ey == BOARD_SIZE - 1))
+    if((piece.GetAlliance() == Alliance::BLUE && ey == 0)
+            || (piece.GetAlliance() == Alliance::RED && ey == BOARD_SIZE - 1))
     {
         coronation = true;
     }
