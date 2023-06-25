@@ -37,8 +37,6 @@ bool BoardInternational::MakeMove(const Move &move)
         {
             ++_count16;
         }
-        else
-            _count16 = 0;
 
         if(total == 2)
             ++_count5;

@@ -23,8 +23,8 @@ namespace draughts
             CANADIAN,
             CHECKRERS,
             PORTUGUESE,
-            /*
             FRISIAN,
+            /*
             TURKISH,*/
             NUM_OF_GAME_TYPES,
         };
@@ -72,7 +72,7 @@ namespace draughts
         Type _type;
         int _searchDepth;
         Alliance _turn = Alliance::BLUE;
-        GameStatus _status = GameStatus::PLAY;
+        GameStatus _status = GameStatus::UNKNOWN;
         Move _lastMove;
     };
 }

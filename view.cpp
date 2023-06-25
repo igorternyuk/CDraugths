@@ -55,35 +55,38 @@ void View::OnMouseEvent(int button, int state, int x, int y)
     {
         if(state == GLUT_DOWN)
         {
-            const Board& board = _game->GetBoard();
-            Alliance turn = _game->GetTurn();
-            std::shared_ptr<Player> player = _game->GetPlayer(turn);
-
-            if(player->IsHuman())
+            if(_game->GetStatus() == GameStatus::PLAY)
             {
-                auto ptrPlayerHuman = std::dynamic_pointer_cast<PlayerHuman>(player);
-                if (ptrPlayerHuman)
-                {
-                    int mx = x / TILE_SIZE_PX;
-                    int my = y / TILE_SIZE_PX;
+                const Board& board = _game->GetBoard();
+                Alliance turn = _game->GetTurn();
+                std::shared_ptr<Player> player = _game->GetPlayer(turn);
 
-                    std::cout << "mx = " << mx << " my = " << my << std::endl;
-                    if(button == GLUT_LEFT_BUTTON)
+                if(player->IsHuman())
+                {
+                    auto ptrPlayerHuman = std::dynamic_pointer_cast<PlayerHuman>(player);
+                    if (ptrPlayerHuman)
                     {
-                        if(_bRotateBoard)
+                        int mx = x / TILE_SIZE_PX;
+                        int my = y / TILE_SIZE_PX;
+
+                        std::cout << "mx = " << mx << " my = " << my << std::endl;
+                        if(button == GLUT_LEFT_BUTTON)
                         {
-                            int fx, fy;
-                            FlippedCoordinates(mx, my, fx, fy);
-                            ptrPlayerHuman->Select(board, fx, fy);
+                            if(_bRotateBoard)
+                            {
+                                int fx, fy;
+                                FlippedCoordinates(mx, my, fx, fy);
+                                ptrPlayerHuman->Select(board, fx, fy);
+                            }
+                            else
+                            {
+                                ptrPlayerHuman->Select(board, mx, my);
+                            }
                         }
-                        else
+                        else if(button == GLUT_RIGHT_BUTTON)
                         {
-                            ptrPlayerHuman->Select(board, mx, my);
+                            ptrPlayerHuman->Unselect();
                         }
-                    }
-                    else if(button == GLUT_RIGHT_BUTTON)
-                    {
-                        ptrPlayerHuman->Unselect();
                     }
                 }
             }

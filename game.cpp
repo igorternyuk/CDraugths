@@ -5,6 +5,7 @@
 #include "board_canadian.hpp"
 #include "board_checkers.hpp"
 #include "board_portuguese.hpp"
+#include "board_frisian.hpp"
 #include "player_human.hpp"
 #include "player_alphabeta.hpp"
 #include "rules.hpp"
@@ -23,7 +24,7 @@ Game *Game::GetInstance()
 
 Game::Game():_mode(Mode::HUMAN_CPU), _type(Type::POLISH)
 {
-   SetupNewGame(_type, _mode, Level::eEASY);
+   //SetupNewGame(_type, _mode, Level::eEASY);
 }
 
 Board &Game::GetBoard()
@@ -108,6 +109,10 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     {
         _board = std::make_shared<BoardPortuguese>();
     }
+    else if(type == Type::FRISIAN)
+    {
+        _board = std::make_shared<BoardFrisian>();
+    }
 
     if(mode == Mode::HUMAN_CPU)
     {
@@ -124,6 +129,7 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     _type = type;
     _searchDepth = searchDepth;
     _turn = _board->GetRules()->FirstMoveAlliance();
+    _status = GameStatus::PLAY;
     Reset();
 }
 

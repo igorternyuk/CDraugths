@@ -11,6 +11,7 @@ SOURCES += \
     board_canadian.cpp \
     board_checkers.cpp \
     board_draugths64.cpp \
+    board_frisian.cpp \
     board_international.cpp \
     board_polish.cpp \
     board_portuguese.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     board_canadian.hpp \
     board_checkers.hpp \
     board_draugths64.hpp \
+    board_frisian.hpp \
     board_international.hpp \
     board_polish.hpp \
     board_portuguese.hpp \
