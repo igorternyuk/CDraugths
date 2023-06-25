@@ -70,7 +70,7 @@ namespace view
         int _selectedLevel = (int)draughts::Game::Level::eEASY;
         const std::string _sMenuTitleGameType = "WELLCOME TO THE GAME OF DRAUGHTS!";
         const std::string _sMenuTitleGameType2 = "SELECT GAME TYPE:";
-        const std::string _menuItemsGameType[draughts::Game::NUM_OF_GAME_TYPES] { "DRAUGTHS64", "POLISH", "BRAZILIAN", "CANADIAN", "CHECKERS" };
+        const std::string _menuItemsGameType[draughts::Game::NUM_OF_GAME_TYPES] { "DRAUGTHS64", "POLISH", "BRAZILIAN", "CANADIAN", "CHECKERS", "PORTUGUESE" };
         const std::string _sMenuTitleGameMode = "SELECT GAME MODE:";
         const std::string _menuItemsGameMode[2] { "PLAY WITH RED PIECES", "PLAY WITH BLUE PIECES",  };
         const std::string _sMenuTitleLevel= "SELECT OPPONENT STRENGTH:";
@@ -80,6 +80,7 @@ namespace view
         //const DrawHelper::Color colorLight = {255, 255, 136};
         const DrawHelper::Color _colorTileLight = {245, 245, 245};
         const DrawHelper::Color _colorTileDark = {93, 162, 45};
+        const DrawHelper::Color _colorSelection = {200,200,0};
         const DrawHelper::Color _colorMenuTitle = {255, 0, 0};
         const DrawHelper::Color _colorMenuItem = {38, 144, 205};
         const DrawHelper::Color _colorMenuItemSelected = {255, 255, 0};

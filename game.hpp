@@ -22,8 +22,9 @@ namespace draughts
             BRAZILIAN,
             CANADIAN,
             CHECKRERS,
-            /*
             PORTUGUESE,
+            /*
+            FRISIAN,
             TURKISH,*/
             NUM_OF_GAME_TYPES,
         };

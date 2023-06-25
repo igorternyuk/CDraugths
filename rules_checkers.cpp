@@ -20,7 +20,6 @@ int RulesCheckers::GetPieceValue(const Piece &piece) const
 
 void RulesCheckers::CalcLegalMoves(const Position &position, Alliance alliance, std::vector<Move> &moves) const
 {
-    const int BOARD_SIZE = position.GetBoardSize();
     moves.clear();
 
     auto pieces = position.GetPieces(alliance);
@@ -126,7 +125,7 @@ void RulesCheckers::CalcAllJumps(const Position &position, const Piece &piece, M
 
             current = position.GetTile(ny, nx);
             if(current == Tile::NULL_TILE)
-                continue;
+                break;
 
             if(targetDetected)
             {

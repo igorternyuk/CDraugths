@@ -535,7 +535,6 @@ void View::DrawMoveStep(const Step &step, DrawHelper::Color color)
 
 void View::DrawHumanPlayerSelection()
 {
-    const DrawHelper::Color colorSelection = {255,255,0};
     Game* game = Game::GetInstance();
     Alliance turn = game->GetTurn();
     std::shared_ptr<Player> player = game->GetPlayer(turn);
@@ -555,7 +554,7 @@ void View::DrawHumanPlayerSelection()
                     x = p.second;
                     y = p.first;
                 }
-                DrawHelper::DrawFilledRect(x * TILE_SIZE_PX, y * TILE_SIZE_PX, TILE_SIZE_PX, TILE_SIZE_PX, colorSelection);
+                DrawHelper::DrawFilledRect(x * TILE_SIZE_PX, y * TILE_SIZE_PX, TILE_SIZE_PX, TILE_SIZE_PX, _colorSelection);
             }
         }
     }

@@ -189,25 +189,13 @@ GameStatus BoardDraugths64::GetGameStatus() const
         return GameStatus::DRAW;
     }
 
-    if(_moveLog.size() >= 30)
+    if(_moveLog.size() >= 60)
     {
-        /*int count = 0;
-        for(auto it = _moveLog.rbegin(); it != _moveLog.rend(); ++it)
-        {
-            const Move& move = *it;
-            for(size_t i = 0; i < move.StepCount(); ++i)
-            {
-                if(move.GetStep(i).GetStart().GetPiece().IsKing() && !move.IsJump())
-                    count++;
-            }
-        }*/
-
-        if(_count30 >= 30)
+        if(_count30 >= 2 * 30)
         {
             std::cout << "Draw because of more then 30 sequential kings moves!\n";
             return GameStatus::DRAW;
         }
-
     }
 
     return Board::GetGameStatus();

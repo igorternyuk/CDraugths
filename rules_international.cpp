@@ -127,7 +127,7 @@ void RulesInternational::CalcAllJumps(const Position &position, const Piece &pie
 
             current = position.GetTile(ny, nx);
             if(current == Tile::NULL_TILE)
-                continue;
+                break;
 
             if(targetDetected)
             {

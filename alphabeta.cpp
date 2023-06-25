@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <random>
 
 using namespace draughts;
 
@@ -53,6 +54,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
     int beta = +INF;
     int moveNumber = position->GetMoveLog().size();
 
+    std::vector<std::pair<int, Move>> vBestMoves;
     if(opponent_alliance == Alliance::RED) // CPU is minimizing player
     {
         std::cout << position->ToString() << std::endl;
@@ -79,6 +81,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             if(currVal.score < minVal)
             {
                 bestMove = *it;
+                vBestMoves.push_back({currVal.score, bestMove});
                 minVal = std::min(currVal.score, minVal);
                 if(position->IsEndgameScenario())
                     break;
@@ -97,7 +100,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
                 std::cout << "Best line:\n";
                 std::vector<std::string> v_best_line = Utils::split(currVal.best_line, " ");
                 const size_t N = v_best_line.size();
-                for(int i = 0; i < N; ++i)
+                for(size_t i = 0; i < N; ++i)
                 {
                     if(i % 2 == 0)
                     {
@@ -131,6 +134,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             if(currVal.score > maxVal)
             {
                 bestMove = *it;
+               vBestMoves.push_back({currVal.score, bestMove});
                 maxVal = std::max(currVal.score, maxVal);
                 if(position->IsEndgameScenario())
                     break;
@@ -149,7 +153,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
                 std::cout << "Best line:\n";
                 std::vector<std::string> v_best_line = Utils::split(currVal.best_line, " ");
 
-                for(int i = 0; i < v_best_line.size(); ++i)
+                for(size_t i = 0; i < v_best_line.size(); ++i)
                 {
                     if(i % 2 == 0)
                     {
@@ -177,7 +181,24 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
         std::cout << "Total move time = " << totalMoveTime << "ms" << std::endl;
     }
 
-    return bestMove;
+    std::sort(vBestMoves.begin(), vBestMoves.end(), [](const auto& a, const auto& b){
+        return a.first > b.first;
+    });
+
+    int bestScore = vBestMoves.front().first;
+
+    auto it_ = std::remove_if(vBestMoves.begin(), vBestMoves.end(), [bestScore](const auto& a){
+        return a.first < bestScore;
+    });
+
+    vBestMoves.erase(it_, vBestMoves.end());
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(0, vBestMoves.size());
+    const int rndIdxFrom = dist(mt);
+
+    return vBestMoves.at(rndIdxFrom).second;
 }
 
 MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::max(std::shared_ptr<Position> position, int depth, int alpha, int beta, std::string curr_line)
