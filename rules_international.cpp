@@ -106,7 +106,13 @@ void RulesInternational::CalcAllJumps(const Position &position, const Piece &pie
     Tile startTile = position.GetTile(py, px);
     int N = (piece.IsKing() || move.IsCoronation()) ? position.GetBoardSize() - 1 : 2;
 
-    for(int dir = 0; dir < 4; ++dir)
+    std::vector<int> indices;
+    indices.push_back(eRIGHT_DOWN);
+    indices.push_back(eLEFT_DOWN);
+    indices.push_back(eRIGHT_UP);
+    indices.push_back(eLEFT_UP);
+
+    for(auto dir: indices)
     {
         bool targetDetected = false;
         Tile current = position.GetTile(py, px);

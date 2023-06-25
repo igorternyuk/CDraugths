@@ -43,7 +43,7 @@ namespace draughts
         ////// Interface Posiiton end //////
 
         virtual void SetupInitialPosition();
-        virtual int GetNumPiecesForRow() const = 0;
+        virtual int GetPieceRows() const = 0;
         virtual Notation GetNotation() const = 0;
         virtual std::string TileToNotation(const Tile& tile) const = 0;
         virtual std::string MoveToNotation(const Move& move) const override;
@@ -67,8 +67,8 @@ namespace draughts
             BLUE_KING = 3,
         };
     protected:
-        void Clear();
-        void Reset();
+        virtual void Clear();
+        virtual void Reset();
         void SetTile(const Tile& tile, int row, int col);
         void SetTile(const Tile& tile, int index);
         bool CheckCrown(const Piece &piece) const;

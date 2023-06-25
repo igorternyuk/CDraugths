@@ -28,20 +28,20 @@ bool BoardInternational::MakeMove(const Move &move)
         int total = reds_total + blues_total;
 
         if(piece.IsKing() && !move.IsJump())
-            ++count25;
+            ++_count25;
         else
-            count25 = 0;
+            _count25 = 0;
 
         if((reds_total == 3 && aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING] == 1)
                 || (blues_total == 3 && aCount[RED_PIECE] == 0 && aCount[RED_KING] == 1))
         {
-            ++count16;
+            ++_count16;
         }
         else
-            count16 = 0;
+            _count16 = 0;
 
         if(total == 2)
-            ++count5;
+            ++_count5;
 
         return true;
     }
@@ -84,19 +84,19 @@ GameStatus BoardInternational::GetGameStatus() const
         }
     }
 
-    if(count25 >= 2 * 25)
+    if(_count25 >= 2 * 25)
     {
         std::cout << "Last 25 moves were made only with kings without captures!\n";
         return GameStatus::DRAW;
     }
 
-    if(count16 >= 2 * 16)
+    if(_count16 >= 2 * 16)
     {
         std::cout << "No win within 16 moves with 3 pieces against single king!\n";
         return GameStatus::DRAW;
     }
 
-    if(count5 >= 2 * 30)
+    if(_count5 >= 2 * 30)
     {
         std::cout << "No win within 5 moves with one piece against one!\n";
         return GameStatus::DRAW;
@@ -109,6 +109,17 @@ void BoardInternational::SetupInitialPosition()
 {
     Board::SetupInitialPosition();
     //SetupTestPosition();
+}
+
+void BoardInternational::Reset()
+{
+    Board::Reset();
+    _count25 = 0;
+    _count16 = 0;
+    _count5 = 0;
+    _mapRepBlue.clear();
+    _mapRepRed.clear();
+
 }
 
 void BoardInternational::SetupTestPosition()

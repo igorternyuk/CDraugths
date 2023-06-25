@@ -3,6 +3,7 @@
 #include "board_polish.hpp"
 #include "board_brazilian.hpp"
 #include "board_canadian.hpp"
+#include "board_checkers.hpp"
 #include "player_human.hpp"
 #include "player_alphabeta.hpp"
 #include "rules.hpp"
@@ -97,6 +98,10 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     else if(type == Type::CANADIAN)
     {
         _board = std::make_shared<BoardCanadian>();
+    }
+    else if(type == Type::CHECKRERS)
+    {
+        _board = std::make_shared<BoardCheckers>();
     }
 
     if(mode == Mode::HUMAN_CPU)

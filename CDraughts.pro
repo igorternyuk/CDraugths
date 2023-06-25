@@ -9,6 +9,7 @@ SOURCES += \
     app.cpp \
     board_brazilian.cpp \
     board_canadian.cpp \
+    board_checkers.cpp \
     board_draugths64.cpp \
     board_international.cpp \
     board_polish.cpp \
@@ -28,7 +29,10 @@ SOURCES += \
     rules.cpp \
     rules_checkers.cpp \
     rules_draughts64.cpp \
+    rules_frisian.cpp \
     rules_international.cpp \
+    rules_portuguese.cpp \
+    rules_turkish.cpp \
     step.cpp \
     tile.cpp \
     utils.cpp \
@@ -39,6 +43,7 @@ HEADERS += \
     app.hpp \
     board_brazilian.hpp \
     board_canadian.hpp \
+    board_checkers.hpp \
     board_draugths64.hpp \
     board_international.hpp \
     board_polish.hpp \
@@ -61,7 +66,10 @@ HEADERS += \
     rules.hpp \
     rules_checkers.hpp \
     rules_draughts64.hpp \
+    rules_frisian.hpp \
     rules_international.hpp \
+    rules_portuguese.hpp \
+    rules_turkish.hpp \
     step.hpp \
     tile.hpp \
     utils.hpp \

@@ -70,7 +70,7 @@ namespace view
         int _selectedLevel = (int)draughts::Game::Level::eEASY;
         const std::string _sMenuTitleGameType = "WELLCOME TO THE GAME OF DRAUGHTS!";
         const std::string _sMenuTitleGameType2 = "SELECT GAME TYPE:";
-        const std::string _menuItemsGameType[draughts::Game::NUM_OF_GAME_TYPES] { "DRAUGTHS64", "POLISH", "BRAZILIAN", "CANADIAN" };
+        const std::string _menuItemsGameType[draughts::Game::NUM_OF_GAME_TYPES] { "DRAUGTHS64", "POLISH", "BRAZILIAN", "CANADIAN", "CHECKERS" };
         const std::string _sMenuTitleGameMode = "SELECT GAME MODE:";
         const std::string _menuItemsGameMode[2] { "PLAY WITH RED PIECES", "PLAY WITH BLUE PIECES",  };
         const std::string _sMenuTitleLevel= "SELECT OPPONENT STRENGTH:";

@@ -1,35 +1,30 @@
 #pragma once
-#include "board_international.hpp"
+#include "board.hpp"
 
 namespace draughts
 {
-    class BoardBrazilian: public BoardInternational
+    class BoardCheckers : public Board
     {
     public:
-        BoardBrazilian();
+        BoardCheckers();
     public:
         virtual std::shared_ptr<Position> MakeCopy() const override;
         virtual int GetBoardSize() const override;
+        virtual void SetupInitialPosition() override;
         virtual int GetPieceRows() const override;
         virtual Notation GetNotation() const override;
         virtual std::string TileToNotation(const Tile& tile) const override;
+        virtual GameStatus GetGameStatus() const override;
+        bool MakeMove(const Move &move) override;
+        virtual void Reset() override;
     public:
         enum
         {
             BOARD_SIZE = 8,
             NUM_PIECE_ROWS = 3,
         };
-    private:
-        inline static std::map<int, std::string> _mapAlgebraicNotaion
-        {
-            { 0, "a"},
-            { 1, "b"},
-            { 2, "c"},
-            { 3, "d"},
-            { 4, "e"},
-            { 5, "f"},
-            { 6, "g"},
-            { 7, "h"}
-        };
+    protected:
+        std::map<unsigned int, int> _mapRep;
+        std::map<int, std::string> _mapNotation;
     };
 }

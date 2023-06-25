@@ -138,7 +138,7 @@ void View::OnMouseMotion(int x, int y)
 {
     if(_viewMode == ViewMode::eMenuGameType)
     {
-        _selectedGameType = std::max(0, std::min(3, ((y - 120) / 20)));
+        _selectedGameType = std::max(0, std::min((int)draughts::Game::NUM_OF_GAME_TYPES - 1, ((y - 120) / 20)));
     }
     else if(_viewMode == ViewMode::eMenuGameMode)
     {

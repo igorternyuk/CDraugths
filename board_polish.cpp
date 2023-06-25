@@ -30,7 +30,7 @@ int BoardPolish::GetBoardSize() const
     return BOARD_SIZE;
 }
 
-int BoardPolish::GetNumPiecesForRow() const
+int BoardPolish::GetPieceRows() const
 {
     return NUM_PIECE_ROWS;
 }

@@ -21,8 +21,9 @@ namespace draughts
             POLISH,
             BRAZILIAN,
             CANADIAN,
-            /*PORTUGUESE,
             CHECKRERS,
+            /*
+            PORTUGUESE,
             TURKISH,*/
             NUM_OF_GAME_TYPES,
         };

@@ -31,7 +31,7 @@ int BoardBrazilian::GetBoardSize() const
     return BOARD_SIZE;
 }
 
-int BoardBrazilian::GetNumPiecesForRow() const
+int BoardBrazilian::GetPieceRows() const
 {
     return NUM_PIECE_ROWS;
 }
@@ -43,7 +43,7 @@ Board::Notation BoardBrazilian::GetNotation() const
 
 std::string BoardBrazilian::TileToNotation(const Tile &tile) const
 {
-    int row = tile.GetRow();
-    int col = tile.GetCol();
+    const int row = tile.GetRow();
+    const int col = tile.GetCol();
     return _mapAlgebraicNotaion[col] + std::to_string(BOARD_SIZE - row);
 }

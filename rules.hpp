@@ -27,8 +27,20 @@ namespace draughts
             KING_VALUE = 300,
         };
 
-        inline static constexpr int offsetX_[8] { +1, +1, -1, -1, -1, +1, 0, 0 };
-        inline static constexpr int offsetY_[8] { -1, +1, +1, -1, 0, 0, -1, +1 };
+        enum DirIndices
+        {
+            eRIGHT_UP,
+            eLEFT_UP,
+            eRIGHT_DOWN,
+            eLEFT_DOWN,
+            eLEFT,
+            eRIGHT,
+            eDOWN,
+            eUP,
+        };
+
+        inline static constexpr int offsetX_[8] { +1, -1, +1, -1, -1, +1, 0, 0 };
+        inline static constexpr int offsetY_[8] { -1, -1, +1, +1,  0, 0, -1, +1 };
     };
 }
 

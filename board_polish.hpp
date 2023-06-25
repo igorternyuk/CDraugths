@@ -10,7 +10,7 @@ namespace draughts
     public:
         virtual std::shared_ptr<Position> MakeCopy() const override;
         virtual int GetBoardSize() const override;
-        virtual int GetNumPiecesForRow() const override;
+        virtual int GetPieceRows() const override;
         virtual Notation GetNotation() const override;
     public:
         enum

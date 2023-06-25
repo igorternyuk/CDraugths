@@ -47,7 +47,7 @@ const std::map<int, Piece *> &Board::GetPieces(Alliance alliance) const
 void Board::SetupInitialPosition()
 {
     const int BOARD_SIZE = GetBoardSize();
-    const int NUM_PIECES_FOR_ROW = GetNumPiecesForRow();
+    const int NUM_PIECES_FOR_ROW = GetPieceRows();
     Reset();
     Clear();
     for(int y = 0; y < NUM_PIECES_FOR_ROW; ++y)
@@ -141,16 +141,17 @@ std::string Board::MoveToNotation(const Move &move) const
     const Step& step = move.GetStep(0);
     const Tile& tileStart = step.GetStart();
     std::string notation = TileToNotation(tileStart);
-    const int stepCount = move.StepCount();
     if(step.isJump())
     {
+        const int stepCount = move.StepCount();
         for(int i = 0; i < stepCount; ++i)
         {
+            const Step& step = move.GetStep(i);
             notation += ":" + TileToNotation(step.GetEnd());
         }
     }
     else
-    {
+    {        
         notation +=  "-" + TileToNotation(step.GetEnd());
     }
     return notation;

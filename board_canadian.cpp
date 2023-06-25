@@ -30,7 +30,7 @@ int BoardCanadian::GetBoardSize() const
     return BOARD_SIZE;
 }
 
-int BoardCanadian::GetNumPiecesForRow() const
+int BoardCanadian::GetPieceRows() const
 {
     return NUM_PIECE_ROWS;
 }

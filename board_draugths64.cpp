@@ -25,6 +25,17 @@ void BoardDraugths64::SetupInitialPosition()
     //SetupTestPosition();
 }
 
+void BoardDraugths64::Reset()
+{
+    Board::Reset();
+    _count23 = 0; // 2-3 piece ending limit 5 moves
+    _count45 = 0; // 4-5 piece ending limit 30 moves
+    _count67 = 0; // 6-7 piece ending limit 60 moves
+    _count15 = 0;
+    _oldBalance = 0;
+    _mapRep.clear();
+}
+
 void BoardDraugths64::SetupTestPosition()
 {
     Reset();
@@ -60,7 +71,7 @@ int BoardDraugths64::GetBoardSize() const
     return BOARD_SIZE;
 }
 
-int BoardDraugths64::GetNumPiecesForRow() const
+int BoardDraugths64::GetPieceRows() const
 {
     return NUM_PIECES_FOR_ROW;
 }
@@ -74,6 +85,7 @@ bool BoardDraugths64::MakeMove(const Move &move)
 {
     if(Board::MakeMove(move))
     {
+        const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
         _hash = GetHash();
         _mapRep[_hash]++;
         /////////////////////////////////////////////////////////////////////
@@ -83,7 +95,7 @@ bool BoardDraugths64::MakeMove(const Move &move)
         if((aCount[RED_PIECE] == 0 && aCount[RED_KING]  >= 3 && aCount[BLUE_KING] == 1)
                 || (aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING] >= 3 && aCount[BLUE_PIECE] == 0))
         {
-            ++count15;
+            ++_count15;
         }
 
         int reds_total = aCount[RED_PIECE] + aCount[RED_KING] ;
@@ -93,43 +105,48 @@ bool BoardDraugths64::MakeMove(const Move &move)
         int balance = (aCount[RED_PIECE] + 3 * aCount[RED_KING] ) - (aCount[BLUE_PIECE] + 3 * aCount[BLUE_KING]);
         if(total == 2 || total == 3)
         {
-            count45 = 0;
-            count67 = 0;
-            if(balance != oldBalance)
+            _count45 = 0;
+            _count67 = 0;
+            if(balance != _oldBalance)
             {
-                oldBalance = balance;
-                count23 = 0;
+                _oldBalance = balance;
+                _count23 = 0;
             }
             else
             {
-                ++count23;
+                ++_count23;
             }
         }
         else if(total == 4 || total == 6)
         {
-            if(balance != oldBalance)
+            if(balance != _oldBalance)
             {
-                oldBalance = balance;
-                count45 = 0;
+                _oldBalance = balance;
+                _count45 = 0;
             }
             else
             {
-                ++count45;
+                ++_count45;
             }
         }
         else if(total == 6 || total == 7)
         {
-            count67 = 0;
-            if(balance != oldBalance)
+            _count67 = 0;
+            if(balance != _oldBalance)
             {
-                oldBalance = balance;
-                count67 = 0;
+                _oldBalance = balance;
+                _count67 = 0;
             }
             else
             {
-                ++count67;
+                ++_count67;
             }
         }
+
+        if(move.IsJump() || !piece.IsKing())
+            _count30 = 0;
+        else
+            ++_count30;
 
          return true;
     }
@@ -148,25 +165,25 @@ GameStatus BoardDraugths64::GetGameStatus() const
         }
     }
 
-    if(count15 >= 2 * 15)
+    if(_count15 >= 2 * 15)
     {
         std::cout << "No king capture within 15 moves!\n";
         return GameStatus::DRAW;
     }
 
-    if(count23 >= 2 * 5)
+    if(_count23 >= 2 * 5)
     {
         std::cout << "No captures or coronations in the last 5 moves for 2-3 piece ending!\n";
         return GameStatus::DRAW;
     }
 
-    if(count45 >= 2 * 30)
+    if(_count45 >= 2 * 30)
     {
         std::cout << "No captures or coronations in the last 30 moves for 4-5 piece ending!\n";
         return GameStatus::DRAW;
     }
 
-    if(count67 >= 2 * 60)
+    if(_count67 >= 2 * 60)
     {
         std::cout << "No captures or coronations in the last 60 moves for 6-7 piece ending!\n";
         return GameStatus::DRAW;
@@ -174,7 +191,7 @@ GameStatus BoardDraugths64::GetGameStatus() const
 
     if(_moveLog.size() >= 30)
     {
-        int count = 0;
+        /*int count = 0;
         for(auto it = _moveLog.rbegin(); it != _moveLog.rend(); ++it)
         {
             const Move& move = *it;
@@ -183,9 +200,9 @@ GameStatus BoardDraugths64::GetGameStatus() const
                 if(move.GetStep(i).GetStart().GetPiece().IsKing() && !move.IsJump())
                     count++;
             }
-        }
+        }*/
 
-        if(count >= 30)
+        if(_count30 >= 30)
         {
             std::cout << "Draw because of more then 30 sequential kings moves!\n";
             return GameStatus::DRAW;
