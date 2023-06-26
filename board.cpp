@@ -47,17 +47,17 @@ const std::map<int, Piece *> &Board::GetPieces(Alliance alliance) const
 void Board::SetupInitialPosition()
 {
     const int BOARD_SIZE = GetBoardSize();
-    const int NUM_PIECES_FOR_ROW = GetPieceRows();
+    const int NUM_PIECES_ROWS = GetPieceRows();
     Reset();
     Clear();
-    for(int y = 0; y < NUM_PIECES_FOR_ROW; ++y)
+    for(int y = 0; y < NUM_PIECES_ROWS; ++y)
         for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
-            SetPiece(y,x,Alliance::RED);
+            SetPiece(y,x,Alliance::DARK);
 
 
-    for(int y = BOARD_SIZE - NUM_PIECES_FOR_ROW; y < BOARD_SIZE; ++y)
+    for(int y = BOARD_SIZE - NUM_PIECES_ROWS; y < BOARD_SIZE; ++y)
         for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
-            SetPiece(y,x,Alliance::BLUE);
+            SetPiece(y,x,Alliance::LIGHT);
 }
 
 void Board::SetTile(const Tile &tile, int row, int col)
@@ -113,8 +113,8 @@ void Board::CalcPieceCount(int aCount[]) const
     aCount[BLUE_PIECE] = 0;
     aCount[BLUE_KING] = 0;
 
-    auto redPieces = GetPieces(Alliance::RED);
-    auto bluePieces = GetPieces(Alliance::BLUE);
+    auto redPieces = GetPieces(Alliance::DARK);
+    auto bluePieces = GetPieces(Alliance::LIGHT);
 
     for(const auto& [k,p] : redPieces)
     {
@@ -167,17 +167,17 @@ GameStatus Board::GetGameStatus() const
 {
     Alliance turn = GetTurn();
 
-    if(turn == Alliance::BLUE)
+    if(turn == Alliance::LIGHT)
     {
         std::vector<Move> blueMoves;
-        _rules->CalcLegalMoves(*this, Alliance::BLUE, blueMoves);
+        _rules->CalcLegalMoves(*this, Alliance::LIGHT, blueMoves);
         if(blueMoves.empty())
             return GameStatus::RED_WON;
     }
-    else if(turn == Alliance::RED)
+    else if(turn == Alliance::DARK)
     {
        std::vector<Move> redMoves;
-       _rules->CalcLegalMoves(*this, Alliance::RED, redMoves);
+       _rules->CalcLegalMoves(*this, Alliance::DARK, redMoves);
        if(redMoves.empty())
            return GameStatus::BLUE_WON;
     }
@@ -347,11 +347,11 @@ std::string Board::ToString() const
             if(tile.HasPiece())
             {
                 Piece p = tile.GetPiece();
-                if(p.GetAlliance() == Alliance::RED)
+                if(p.GetAlliance() == Alliance::DARK)
                 {
                     line += p.IsKing() ? "[R]" : "[r]";
                 }
-                else if(p.GetAlliance() == Alliance::BLUE)
+                else if(p.GetAlliance() == Alliance::LIGHT)
                 {
                     line += p.IsKing() ? "[B]" : "[b]";
                 }
@@ -369,8 +369,8 @@ std::string Board::ToString() const
 
 int Board::GetTotalPieces() const
 {
-    auto redPieces = GetPieces(Alliance::RED);
-    auto bluePieces = GetPieces(Alliance::BLUE);
+    auto redPieces = GetPieces(Alliance::DARK);
+    auto bluePieces = GetPieces(Alliance::LIGHT);
     return redPieces.size() + bluePieces.size();
 }
 

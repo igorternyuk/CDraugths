@@ -10,7 +10,7 @@ RulesCheckers::RulesCheckers()
 
 Alliance RulesCheckers::FirstMoveAlliance() const
 {
-    return Alliance::RED;
+    return Alliance::DARK;
 }
 
 int RulesCheckers::GetPieceValue(const Piece &piece) const
@@ -99,12 +99,12 @@ void RulesCheckers::CalcAllJumps(const Position &position, const Piece &piece, M
     Alliance alliance = piece.GetAlliance();
     int N = 2;
     std::vector<int> indices;
-    if(alliance == Alliance::RED || piece.IsKing())
+    if(alliance == Alliance::DARK || piece.IsKing())
     {
         indices.push_back(eRIGHT_DOWN);
         indices.push_back(eLEFT_DOWN);
     }
-    if(alliance == Alliance::BLUE || piece.IsKing())
+    if(alliance == Alliance::LIGHT || piece.IsKing())
     {
         indices.push_back(eRIGHT_UP);
         indices.push_back(eLEFT_UP);

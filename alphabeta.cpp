@@ -55,7 +55,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
     int moveNumber = position->GetMoveLog().size();
 
     std::vector<std::pair<int, Move>> vBestMoves;
-    if(opponent_alliance == Alliance::RED) // CPU is minimizing player
+    if(opponent_alliance == Alliance::DARK) // CPU is minimizing player
     {
         std::cout << position->ToString() << std::endl;
         int minVal = INF;
@@ -119,7 +119,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             }
         }
     }
-    else if(opponent_alliance == Alliance::BLUE)
+    else if(opponent_alliance == Alliance::LIGHT)
     {
         int maxVal = -INF;
         for(auto it = lolm.begin(); it != lolm.end(); ++it) // CPU is maximizing player
@@ -220,7 +220,7 @@ MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::max(std::shared_ptr<Position> pos
 
     int value = -INF;
     std::vector<Move> lolm; // list of legal moves
-    position->LegalMoves(Alliance::RED, lolm);
+    position->LegalMoves(Alliance::DARK, lolm);
 
     Evaluation evalBest;
     for(auto it = lolm.begin(); it != lolm.end(); ++it)
@@ -268,7 +268,7 @@ MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::min(std::shared_ptr<Position> pos
 
     int value = INF;
     std::vector<Move> lolm; // list of legal moves
-    position->LegalMoves(Alliance::BLUE, lolm);
+    position->LegalMoves(Alliance::LIGHT, lolm);
 
     Evaluation evalBest;
     for(auto it = lolm.begin(); it != lolm.end(); ++it)

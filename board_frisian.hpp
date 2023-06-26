@@ -25,12 +25,11 @@ namespace draughts
         {
             BOARD_SIZE = 10,
             NUM_PIECE_ROW = 4,
+            COUNT_2 = 2,
+            COUNT_7 = 7,
         };
     protected:
-        int _count2 = 0;
-        int _count7 = 0;
-        bool _bCount2Changed = false;
-        bool _bCount7Changed = false;
+        std::map<int,std::pair<int, bool>> _mapDrawRep {{COUNT_2, {0, false}}, {COUNT_7, {0, false}}};
         std::map<int, std::string> _mapNotation;
     };
 }

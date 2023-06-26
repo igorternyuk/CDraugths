@@ -12,9 +12,9 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
     int score = 0;
 
     std::vector<Move> redLegalMoves;
-    position.LegalMoves(Alliance::RED, redLegalMoves);
+    position.LegalMoves(Alliance::DARK, redLegalMoves);
     std::vector<Move> blueLegalMoves;
-    position.LegalMoves(Alliance::BLUE, blueLegalMoves);
+    position.LegalMoves(Alliance::LIGHT, blueLegalMoves);
 
     /*if(redLegalMoves.empty())
         return -10000;
@@ -37,7 +37,7 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
                 const Piece& piece = currTile.GetPiece();
                 const int pieceValue = rules.GetPieceValue(piece);
 
-                if(currTile.GetPiece().GetAlliance() == Alliance::RED)
+                if(currTile.GetPiece().GetAlliance() == Alliance::DARK)
                 {
                     if(piece.IsKing())
                         num_red_kings++;
@@ -56,7 +56,7 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
                     if(x == BOARD_SIZE / 2 && y == BOARD_SIZE - 1)
                         score += 3 * pieceValue;
                 }
-                else if(currTile.GetPiece().GetAlliance() == Alliance::BLUE)
+                else if(currTile.GetPiece().GetAlliance() == Alliance::LIGHT)
                 {
                     if(piece.IsKing())
                         num_red_kings--;

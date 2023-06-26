@@ -71,7 +71,7 @@ namespace draughts
         Mode _mode;
         Type _type;
         int _searchDepth;
-        Alliance _turn = Alliance::BLUE;
+        Alliance _turn = Alliance::LIGHT;
         GameStatus _status = GameStatus::UNKNOWN;
         Move _lastMove;
     };

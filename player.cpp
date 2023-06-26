@@ -17,5 +17,5 @@ Alliance Player::GetOpponentAlliance() const
 {
     if(_alliance == Alliance::NONE)
         return Alliance::NONE;
-    return _alliance == Alliance::RED ? Alliance::BLUE : Alliance::RED;
+    return _alliance == Alliance::DARK ? Alliance::LIGHT : Alliance::DARK;
 }

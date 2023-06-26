@@ -141,7 +141,7 @@ void View::OnMouseMotion(int x, int y)
 {
     if(_viewMode == ViewMode::eMenuGameType)
     {
-        _selectedGameType = std::max(0, std::min((int)draughts::Game::NUM_OF_GAME_TYPES - 1, ((y - 120) / 20)));
+        _selectedGameType = std::max(0, std::min((int)draughts::Game::NUM_OF_GAME_TYPES - 1, ((y - 120 + 18) / (18 + 18/2))));
     }
     else if(_viewMode == ViewMode::eMenuGameMode)
     {
@@ -160,42 +160,61 @@ void View::OnMouseMotion(int x, int y)
 
 void View::DrawGameTypeMenu()
 {
+    DrawMenuBackgroud();
    // glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameType.size()) / 2;
-    DrawHelper::DrawWord(_sMenuTitleGameType.c_str(), titleLeftX, 40, 20, {0, 233, 0});
+    DrawHelper::DrawWord24(_sMenuTitleGameType.c_str(), titleLeftX, 40, 20, _colorMenuTitle1);
     int titleLeftX2 = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameType2.size()) / 2;
-    DrawHelper::DrawWord(_sMenuTitleGameType2.c_str(), titleLeftX2, 80, 20, _colorMenuTitle);
+    DrawHelper::DrawWord24(_sMenuTitleGameType2.c_str(), titleLeftX2, 80, 20, _colorMenuTitle2);
 
     for(int i = 0; i < draughts::Game::NUM_OF_GAME_TYPES; ++i)
     {
         int leftX = (GetDefaultWindowWidth() - 20 * _menuItemsGameType[i].size()) / 2;
-        DrawHelper::DrawWord(_menuItemsGameType[i].c_str(), leftX, 120 + i * 30, 20, i == _selectedGameType ? _colorMenuItemSelected : _colorMenuItem);
+        DrawHelper::DrawWord24(_menuItemsGameType[i].c_str(), leftX, 120 + i * (18+18/2), 20, i == _selectedGameType ? _colorMenuItemSelected : _colorMenuItem);
     }
 }
 
 void View::DrawGameModeMenu()
 {
+    DrawMenuBackgroud();
     //glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameMode.size()) / 2;
-    DrawHelper::DrawWord(_sMenuTitleGameMode.c_str(), titleLeftX, 20, 20, {0, 233, 0});
+    DrawHelper::DrawWord24(_sMenuTitleGameMode.c_str(), titleLeftX, 20, 20, {0, 233, 0});
 
     for(int i = 0; i < 2; ++i)
     {
         int leftX = (GetDefaultWindowWidth() - 20 * _menuItemsGameMode[i].size()) / 2;
-        DrawHelper::DrawWord(_menuItemsGameMode[i].c_str(), leftX, 60 + i * 30, 20, i == _selectedGameMode ? _colorMenuItemSelected : _colorMenuItem);
+        DrawHelper::DrawWord24(_menuItemsGameMode[i].c_str(), leftX, 60 + i * 30, 20, i == _selectedGameMode ? _colorMenuItemSelected : _colorMenuItem);
     }
 }
 
 void View::DrawLevelMenu()
 {
+    DrawMenuBackgroud();
     //glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleLevel.size()) / 2;
-    DrawHelper::DrawWord(_sMenuTitleLevel.c_str(), titleLeftX, 20, 20, {0, 233, 0});
+    DrawHelper::DrawWord24(_sMenuTitleLevel.c_str(), titleLeftX, 20, 20, {0, 233, 0});
 
     for(int i = 0; i < 4; ++i)
     {
         int leftX = (GetDefaultWindowWidth() - 20 * _menuItemsLevel[i].size()) / 2;
-        DrawHelper::DrawWord(_menuItemsLevel[i].c_str(), leftX, 60 + i * 30, 20, i == _selectedLevel ? _colorMenuItemSelected : _colorMenuItem);
+        DrawHelper::DrawWord24(_menuItemsLevel[i].c_str(), leftX, 60 + i * 30, 20, i == _selectedLevel ? _colorMenuItemSelected : _colorMenuItem);
+    }
+}
+
+void View::DrawMenuBackgroud()
+{
+    int boardSize = 5;
+    float w = GetDefaultWindowWidth();
+    const int tileSize = w / boardSize;
+    DrawHelper::DrawFilledRect(0, 0, tileSize * boardSize, tileSize * boardSize, {130,130,130});
+
+    for(int y = 0; y < boardSize; ++y)
+    {
+        for(int x = (y + 1) % 2; x < boardSize; x += 2)
+        {
+            DrawHelper::DrawFilledRect(tileSize * x, tileSize * y, tileSize, tileSize, {90,112,120});
+        }
     }
 }
 
@@ -203,8 +222,8 @@ void View::OnKeyboardEvent(unsigned char key, int x, int y)
 {
     bool bNeedToResizeWindow = false;
     bool bFlipChanged = false;
-    int width = GetWindowWidth();
-    int height = GetWindowHeight();
+    int width = GetDefaultWindowWidth();
+    int height = GetDefaultWindowHeight();
     if(key == KEY_RETURN)//enter
     {
         if(_viewMode == ViewMode::eBoard)
@@ -224,8 +243,8 @@ void View::OnKeyboardEvent(unsigned char key, int x, int y)
             _viewMode = ViewMode::eBoard;
             _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, _selectedLevel);
 
-            const int width = GetWindowWidth();
-            const int height = GetWindowHeight();
+            width = GetWindowWidth();
+            height = GetWindowHeight();
 
             glViewport(0, 0, width, height);
             glMatrixMode(GL_PROJECTION);
@@ -406,25 +425,26 @@ void View::HighlightLegalMoves()
 void View::DrawGameStatus()
 {
     GameStatus status = _game->GetStatus();
+    bool bIsHumanPlayerRed = _game->GetPlayer(Alliance::DARK)->IsHuman();
     if(status == GameStatus::PLAY)
     {
         Alliance turn = _game->GetTurn();
-        if(turn == Alliance::RED)
-            DrawHelper::DrawWord("REDS TO PLAY", 5, 20, 20, {255,0,0});
-        else if(turn == Alliance::BLUE)
-            DrawHelper::DrawWord("BLUES TO PLAY", 5, 20, 20, {0,0,255});
+        if(turn == Alliance::DARK)
+            DrawHelper::DrawWord10(bIsHumanPlayerRed ? "YOUR TURN" : "OPPONENTS'S TURN", 5, 20, 10, {0,127,0});
+        else if(turn == Alliance::LIGHT)
+            DrawHelper::DrawWord10(bIsHumanPlayerRed ? "OPPONENTS'S TURN" : "YOUR TURN", 5, 20, 10, {0,127,0});
     }
     else if(status == GameStatus::RED_WON)
     {
-        DrawHelper::DrawWord("RED PLAYER WON!", 5, 20, 20, {255,0,0});
+        DrawHelper::DrawWord10(bIsHumanPlayerRed ? "YOU WON!" : "YOU LOST!", 5, 20, 10, {0,127,0});
     }
     else if(status ==GameStatus::BLUE_WON)
     {
-        DrawHelper::DrawWord("BLUE PLAYER WON!", 5, 20, 20, {0,0,255});
+        DrawHelper::DrawWord10(bIsHumanPlayerRed ? "YOU LOST!" : "YOU WON!", 5, 20, 10,{0,127,0});
     }
     else if(status == GameStatus::DRAW)
     {
-        DrawHelper::DrawWord("DRAW!", 5, 20, 20, {0,255,0});
+        DrawHelper::DrawWord10("DRAW!", 5, 20, 10, {0,127,0});
     }
 }
 
@@ -467,20 +487,20 @@ void View::DrawBoard()
                     {
                         std::string sRank = sNotation.substr(1, 1);
                         const char* rank = sRank.c_str();
-                        DrawHelper::DrawWord(rank, topLeftX + x * TILE_SIZE_PX, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX * 3 / 5, 10, _colorNotation);
+                        DrawHelper::DrawWord24(rank, topLeftX + x * TILE_SIZE_PX, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX * 3 / 5, 10, _colorNotation);
                     }
                     if(y == boardSize - 1)
                     {
                         std::string sFile = sNotation.substr(0, 1);
                         const char* file = sFile.c_str();
-                        DrawHelper::DrawWord(file, topLeftX + x * TILE_SIZE_PX + TILE_SIZE_PX * 0.47, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX, 10, _colorNotation);
+                        DrawHelper::DrawWord24(file, topLeftX + x * TILE_SIZE_PX + TILE_SIZE_PX * 0.47, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX, 10, _colorNotation);
                     }
                 }
                 else if(notation == Board::Notation::NUMERIC)
                 {
                     if(tile.IsDark())
                     {
-                        DrawHelper::DrawWord(board.TileToNotation(tile).c_str(), topLeftX + x * TILE_SIZE_PX, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX / 4, 10, _colorNotation);
+                        DrawHelper::DrawWord24(board.TileToNotation(tile).c_str(), topLeftX + x * TILE_SIZE_PX, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX / 4, 10, _colorNotation);
                     }
                 }
             }
@@ -492,20 +512,16 @@ void View::DrawPieces()
 {
     Board& board = _game->GetBoard();
 
-    const DrawHelper::Color colorRedPiece = {255, 0, 0};
-    const DrawHelper::Color colorRedPiece2 = {177, 0, 0};
-    const DrawHelper::Color colorBluePiece = {0,109,211};
-    const DrawHelper::Color colorBluePiece2 = {0,0,155};
-    const float pieceSizeRatio = 0.33f;
+    const float pieceSizeRatio = 0.32f;
 
-    auto redPieces = board.GetPieces(Alliance::RED);
-    auto bluePieces = board.GetPieces(Alliance::BLUE);
+    auto redPieces = board.GetPieces(Alliance::DARK);
+    auto bluePieces = board.GetPieces(Alliance::LIGHT);
 
     for(const auto& [i, p] : redPieces)
-        DrawPiece(*p, colorRedPiece, colorRedPiece2, pieceSizeRatio);
+        DrawPiece(*p, _colorDarkPiece, _colorDarkPiece2, pieceSizeRatio);
 
     for(const auto& [i, p] : bluePieces)
-        DrawPiece(*p, colorBluePiece, colorBluePiece2, pieceSizeRatio);
+        DrawPiece(*p, _colorLightPiece, _colorLightPiece2, pieceSizeRatio);
 }
 
 void View::DrawMoveStep(const Step &step, DrawHelper::Color color)
@@ -617,6 +633,7 @@ void View::DrawCrown(const Piece &piece, DrawHelper::Color color)
     glColor3f(color.red / 255.f, color.green / 255.f, color.blue / 255.f);
     glBegin(GL_POLYGON);
     glVertex2f(bottomLeftX, bottomY);
+    glVertex2f(leftX, topSides);
     glVertex2f(leftX, topSides);
     glVertex2f(bottomRightX, bottomY);
     glEnd();

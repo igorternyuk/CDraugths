@@ -10,7 +10,7 @@ RulesPortuguese::RulesPortuguese()
 
 Alliance RulesPortuguese::FirstMoveAlliance() const
 {
-    return Alliance::BLUE;
+    return Alliance::LIGHT;
 }
 
 int RulesPortuguese::GetPieceValue(const Piece &piece) const
@@ -130,12 +130,12 @@ void RulesPortuguese::CalcAllJumps(const Position &position, const Piece &piece,
     Alliance alliance = piece.GetAlliance();
     int N = piece.IsKing() ? BOARD_SIZE - 1 : 2;
     std::vector<int> indices;
-    if(alliance == Alliance::RED || piece.IsKing())
+    if(alliance == Alliance::DARK || piece.IsKing())
     {
         indices.push_back(eRIGHT_DOWN);
         indices.push_back(eLEFT_DOWN);
     }
-    if(alliance == Alliance::BLUE || piece.IsKing())
+    if(alliance == Alliance::LIGHT || piece.IsKing())
     {
         indices.push_back(eRIGHT_UP);
         indices.push_back(eLEFT_UP);

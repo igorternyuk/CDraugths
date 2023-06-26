@@ -116,13 +116,13 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
 
     if(mode == Mode::HUMAN_CPU)
     {
-        _playerBlue = std::make_shared<PlayerHuman>(Alliance::BLUE);
-        _playerRed = std::make_shared<PlayerAlphaBeta>(Alliance::RED, searchDepth);
+        _playerBlue = std::make_shared<PlayerHuman>(Alliance::LIGHT);
+        _playerRed = std::make_shared<PlayerAlphaBeta>(Alliance::DARK, searchDepth);
     }
     else if(mode == Mode::CPU_HUMAN)
     {
-        _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::RED, searchDepth);
-        _playerRed = std::make_shared<PlayerHuman>(Alliance::BLUE);
+        _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::DARK, searchDepth);
+        _playerRed = std::make_shared<PlayerHuman>(Alliance::LIGHT);
     }
 
     _mode = mode;
@@ -175,6 +175,6 @@ const Move &Game::GetLastMove() const
 
 const std::shared_ptr<Player> &Game::GetPlayer(Alliance alliance) const
 {
-    return alliance == Alliance::RED ? _playerRed : _playerBlue;
+    return alliance == Alliance::DARK ? _playerRed : _playerBlue;
 }
 

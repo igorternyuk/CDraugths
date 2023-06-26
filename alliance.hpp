@@ -4,8 +4,8 @@ namespace draughts
 {
     enum class Alliance
     {
-        RED,
-        BLUE,
+        DARK,
+        LIGHT,
         NONE
     };
 

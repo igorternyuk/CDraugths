@@ -9,6 +9,7 @@ namespace draughts
         BoardInternational(int N);
     public:        
         virtual bool MakeMove(const Move& move) override;
+        virtual bool UndoLastMove() override;
         virtual std::string TileToNotation(const Tile& tile) const override;
         virtual GameStatus GetGameStatus() const override;
         virtual void SetupInitialPosition() override final;
@@ -16,9 +17,19 @@ namespace draughts
     private:
         void SetupTestPosition();
     protected:
-        int _count25 = 0;
-        int _count16 = 0;
-        int _count5 = 0;
+        enum
+        {
+            COUNT_5 = 5,
+            COUNT_16 = 16,
+            COUNT_25 = 25,
+        };
+    protected:
+        std::map<int,std::pair<int, bool>> _mapDrawRep
+        {
+            {COUNT_5, {0, false}},
+            {COUNT_16, {0, false}},
+            {COUNT_25, {0, false}}
+        };
         std::map<unsigned int, int> _mapRepBlue;
         std::map<unsigned int, int> _mapRepRed;
         std::map<int, std::string> _mapNotation;

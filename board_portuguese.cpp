@@ -35,12 +35,12 @@ void BoardPortuguese::SetupInitialPosition()
     Clear();
     for(int y = 0; y < NUM_PIECES_FOR_ROW; ++y)
         for(int x = y % 2; x < BOARD_SIZE; x += 2)
-            SetPiece(y,x,Alliance::RED);
+            SetPiece(y,x,Alliance::DARK);
 
 
     for(int y = BOARD_SIZE - NUM_PIECES_FOR_ROW; y < BOARD_SIZE; ++y)
         for(int x = y % 2; x < BOARD_SIZE; x += 2)
-            SetPiece(y,x,Alliance::BLUE);
+            SetPiece(y,x,Alliance::LIGHT);
 }
 
 int BoardPortuguese::GetBoardSize() const
@@ -116,7 +116,7 @@ bool BoardPortuguese::MakeMove(const Move &move)
         {
             if(_count12 == 0)
             {
-                const auto& redPieces = GetPieces(Alliance::RED);
+                const auto& redPieces = GetPieces(Alliance::DARK);
                 bool bStartCount12 = std::any_of(redPieces.begin(), redPieces.end(), [&](const auto& p)
                 {
                     return IsPieceOnTheMainDiagonal(*p.second);
@@ -132,7 +132,7 @@ bool BoardPortuguese::MakeMove(const Move &move)
         {
             if(_count12 == 0)
             {
-                const auto& bluePieces = GetPieces(Alliance::BLUE);
+                const auto& bluePieces = GetPieces(Alliance::LIGHT);
                 bool bStartCount12 = std::any_of(bluePieces.begin(), bluePieces.end(), [&](const auto& p)
                 {
                     return IsPieceOnTheMainDiagonal(*p.second);

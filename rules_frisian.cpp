@@ -43,10 +43,10 @@ void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, s
         };
         //Majority rule
         std::sort(moves.begin(), moves.end(), [&](const Move& m1, const Move& m2){
-            int cnt1 = m1.StepCount();
-            int cnt2 = m2.StepCount();
-            if(cnt1 == cnt2) //quality rule
-            {
+            //int cnt1 = m1.StepCount();
+            //int cnt2 = m2.StepCount();
+            //if(cnt1 == cnt2) //quality rule
+            //{
                 int quality1 = MoveValue(m1);
                 int quality2 = MoveValue(m2);
                 if(quality1 == quality2)
@@ -56,21 +56,22 @@ void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, s
                     return GetPieceValue(piece1) > GetPieceValue(piece2);
                 }
                 return quality1 > quality2;
-            }
-            return cnt1 > cnt2;
+            //}
+            //return cnt1 > cnt2;
         });
 
-        const int maxCapture = moves[0].StepCount();
+        //const int maxCapture = moves[0].StepCount();
         const int maxValue = MoveValue(moves[0]);
         const Piece& piece1 = moves[0].GetFirstStep().GetStart().GetPiece();
         const int piece1_val = GetPieceValue(piece1);
         auto it_ = std::remove_if(moves.begin(), moves.end(), [&](auto &move)
         {
-            int num_captures = move.StepCount();
+            //int num_captures = move.StepCount();
             int move_val = MoveValue(move);
             const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
             const int piece_val = GetPieceValue(piece);
-            return num_captures == maxCapture ? (move_val == maxValue  ? piece_val < piece1_val : move_val < maxValue) : num_captures < maxCapture;
+            return move_val == maxValue  ? piece_val < piece1_val : move_val < maxValue;
+            //return num_captures == maxCapture ? (move_val == maxValue  ? piece_val < piece1_val : move_val < maxValue) : num_captures < maxCapture;
         });
 
         moves.erase(it_, moves.end());
@@ -129,11 +130,11 @@ void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, s
 
     /*A king may only move three times in a row unless it makes a capture. Otherwise the player must move another piece.
      *   If the player has only kings on the board this rule does not apply.*/
-    bool bHasMans = std::any_of(moves.begin(), moves.end(), [](const Move& move){
+    bool bHasMen = std::any_of(moves.begin(), moves.end(), [](const Move& move){
         return !move.GetFirstStep().GetStart().GetPiece().IsKing();
     });
 
-    if(bHasMans)
+    if(bHasMen)
     {
         const std::vector<Move> moveLog = position.GetMoveLog();
         if(moveLog.size() > 6)
@@ -186,6 +187,11 @@ void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, s
             }
         }
     }
+}
+
+int RulesFrisian::GetPieceValue(const Piece &piece) const
+{
+    return piece.IsKing() ? int(MAN_KING_RATIO * PIECE_VALUE) : PIECE_VALUE;
 }
 
 void RulesFrisian::CalcAllJumps(const Position &position, const Piece &piece, Move move, std::vector<Move> &legalMoves) const

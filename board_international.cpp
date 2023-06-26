@@ -16,9 +16,9 @@ bool BoardInternational::MakeMove(const Move &move)
     {
         _hash = GetHash();
         const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
-        if(piece.GetAlliance() == Alliance::RED)
+        if(piece.GetAlliance() == Alliance::DARK)
             _mapRepBlue[_hash]++;
-        else if(piece.GetAlliance() == Alliance::BLUE)
+        else if(piece.GetAlliance() == Alliance::LIGHT)
             _mapRepRed[_hash]++;
         int aCount[4];
         CalcPieceCount(aCount);
@@ -28,20 +28,67 @@ bool BoardInternational::MakeMove(const Move &move)
         int total = reds_total + blues_total;
 
         if(piece.IsKing() && !move.IsJump())
-            ++_count25;
+            ++_mapDrawRep[COUNT_25].first;
         else
-            _count25 = 0;
+            _mapDrawRep[COUNT_25].first = 0;
+
+        _mapDrawRep[COUNT_25].second = true;
 
         if((reds_total == 3 && aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING] == 1)
                 || (blues_total == 3 && aCount[RED_PIECE] == 0 && aCount[RED_KING] == 1))
         {
-            ++_count16;
+            ++_mapDrawRep[COUNT_16].first;
+            _mapDrawRep[COUNT_16].second = true;
+        }
+        else
+        {
+            _mapDrawRep[COUNT_16].second = false;
         }
 
         if(total == 2)
-            ++_count5;
+        {
+            ++_mapDrawRep[COUNT_5].first;
+            _mapDrawRep[COUNT_5].second = true;
+        }
+        else
+            _mapDrawRep[COUNT_5].second = false;
+
 
         return true;
+    }
+
+    return false;
+}
+
+bool BoardInternational::UndoLastMove()
+{
+    _hash = GetHash();
+    const std::vector<Move>& moveLog = GetMoveLog();
+    if(!moveLog.empty())
+    {
+        const Move& moveLast = GetMoveLog().back();
+        const Piece& piece = moveLast.GetFirstStep().GetStart().GetPiece();
+        if(!_mapRepBlue.empty() && _mapRepBlue.find(_hash) != _mapRepBlue.end() )
+        {
+            if(piece.GetAlliance() == Alliance::DARK)
+                _mapRepBlue[_hash]--;
+        }
+        if(!_mapRepRed.empty() && _mapRepRed.find(_hash) != _mapRepRed.end() )
+        {
+            if(piece.GetAlliance() == Alliance::LIGHT)
+                _mapRepRed[_hash]--;
+        }
+
+        if(Board::UndoLastMove())
+        {
+            for(auto& [k, p]: _mapDrawRep)
+            {
+                if(p.first > 0)
+                    --p.first;
+                p.second = false;
+            }
+            return true;
+        }
     }
 
     return false;
@@ -82,19 +129,19 @@ GameStatus BoardInternational::GetGameStatus() const
         }
     }
 
-    if(_count25 >= 2 * 25)
+    if(_mapDrawRep.at(COUNT_25).first >= 2 * COUNT_25)
     {
         std::cout << "Last 25 moves were made only with kings without captures!\n";
         return GameStatus::DRAW;
     }
 
-    if(_count16 >= 2 * 16)
+    if(_mapDrawRep.at(COUNT_16).first >= 2 * COUNT_16)
     {
         std::cout << "No win within 16 moves with 3 pieces against single king!\n";
         return GameStatus::DRAW;
     }
 
-    if(_count5 >= 2 * 30)
+    if(_mapDrawRep.at(COUNT_5).first >= 2 * 30)
     {
         std::cout << "No win within 5 moves with one piece against one!\n";
         return GameStatus::DRAW;
@@ -112,24 +159,25 @@ void BoardInternational::SetupInitialPosition()
 void BoardInternational::Reset()
 {
     Board::Reset();
-    _count25 = 0;
-    _count16 = 0;
-    _count5 = 0;
+    for(auto& [k,p]: _mapDrawRep)
+    {
+        p.first = 0;
+        p.second = false;
+    }
     _mapRepBlue.clear();
     _mapRepRed.clear();
-
 }
 
 void BoardInternational::SetupTestPosition()
 {
     Reset();
     Clear();
-    SetPiece(2,7,Alliance::RED, true);
-    SetPiece(6,7,Alliance::RED, false);
-    SetPiece(9,2,Alliance::RED, false);
-    SetPiece(9,4,Alliance::RED, false);
+    SetPiece(2,7,Alliance::DARK, true);
+    SetPiece(6,7,Alliance::DARK, false);
+    SetPiece(9,2,Alliance::DARK, false);
+    SetPiece(9,4,Alliance::DARK, false);
 
-    SetPiece(5,4,Alliance::BLUE, false);
-    SetPiece(6,5,Alliance::BLUE, false);
-    SetPiece(8,5,Alliance::BLUE, false);
+    SetPiece(5,4,Alliance::LIGHT, false);
+    SetPiece(6,5,Alliance::LIGHT, false);
+    SetPiece(8,5,Alliance::LIGHT, false);
 }

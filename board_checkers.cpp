@@ -65,7 +65,7 @@ GameStatus BoardCheckers::GetGameStatus() const
     {
         if(_mapRep.at(_hash) >= 3)
         {
-            std::cout << "Draw by threefold repetition!\n";
+            //std::cout << "Draw by threefold repetition!\n";
             return GameStatus::DRAW;
         }
     }
@@ -83,6 +83,17 @@ bool BoardCheckers::MakeMove(const Move &move)
         return true;
     }
     return false;
+}
+
+bool BoardCheckers::UndoLastMove()
+{
+    _hash = GetHash();
+    if(!_mapRep.empty() && _mapRep.find(_hash) != _mapRep.end() )
+    {
+        _mapRep[_hash]--;
+    }
+
+    return Board::UndoLastMove();
 }
 
 void BoardCheckers::Reset()

@@ -13,25 +13,34 @@ namespace draughts
         virtual int GetPieceRows() const override;
         virtual Board::Notation GetNotation() const override;
         virtual bool MakeMove(const Move& move) override;
+        virtual bool UndoLastMove() override;
         virtual std::string TileToNotation(const Tile& tile) const override;
         virtual GameStatus GetGameStatus() const override;
         void SetupInitialPosition() override;
         virtual void Reset() override;
 
-    private:
+    protected:
         enum
         {
             BOARD_SIZE = 8,
             NUM_PIECES_FOR_ROW = 3,
+            COUNT_23 = 5,
+            COUNT_45 = 30,
+            COUNT_67 = 60,
+            COUNT_15 = 15,
+            COUNT_30 = 30,
         };
-    private:
+    protected:
         void SetupTestPosition();
-    private:
-        int _count23 = 0; // 2-3 piece ending limit 5 moves
-        int _count45 = 0; // 4-5 piece ending limit 30 moves
-        int _count67 = 0; // 6-7 piece ending limit 60 moves
-        int _count15 = 0;
-        int _count30 = 0;
+    protected:
+        std::map<int,std::pair<int, bool>> _mapDrawRep
+        {
+            {COUNT_23, {0, false}},
+            {COUNT_45, {0, false}},
+            {COUNT_67, {0, false}},
+            {COUNT_15, {0, false}},
+            {COUNT_30, {0, false}},
+        };
         int _oldBalance = 0;
         std::map<unsigned int, int> _mapRep;
     private:

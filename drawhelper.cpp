@@ -32,7 +32,7 @@ void DrawHelper::DrawArrow(float x1, float y1, float x2, float y2, Color color)
     glLineWidth(1);
 }
 
-void DrawHelper::DrawWord(const char *word, float x_, float y_, float space, Color color)
+void DrawHelper::DrawWord24(const char *word, float x_, float y_, float space, Color color)
 {
     glColor3f(color.red / 255.f, color.green / 255.f, color.blue / 255.f);
     for(unsigned int i = 0; i < strlen(word); ++i)
@@ -40,6 +40,17 @@ void DrawHelper::DrawWord(const char *word, float x_, float y_, float space, Col
         glRasterPos2f(x_ + i * space, y_);
         char ch = word[i];
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, (int)ch);
+    }
+}
+
+void DrawHelper::DrawWord10(const char *word, float x_, float y_, float space, Color color)
+{
+    glColor3f(color.red / 255.f, color.green / 255.f, color.blue / 255.f);
+    for(unsigned int i = 0; i < strlen(word); ++i)
+    {
+        glRasterPos2f(x_ + i * space, y_);
+        char ch = word[i];
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, (int)ch);
     }
 }
 

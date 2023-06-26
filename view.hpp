@@ -60,6 +60,7 @@ namespace view
         void DrawGameTypeMenu();
         void DrawGameModeMenu();
         void DrawLevelMenu();
+        void DrawMenuBackgroud();
     private:
         draughts::Game * _game;
         bool _bShowNotation = true;
@@ -72,17 +73,34 @@ namespace view
         const std::string _sMenuTitleGameType2 = "SELECT GAME TYPE:";
         const std::string _menuItemsGameType[draughts::Game::NUM_OF_GAME_TYPES] { "DRAUGTHS64", "POLISH", "BRAZILIAN", "CANADIAN", "CHECKERS", "PORTUGUESE", "FRISIAN" };
         const std::string _sMenuTitleGameMode = "SELECT GAME MODE:";
-        const std::string _menuItemsGameMode[2] { "PLAY WITH RED PIECES", "PLAY WITH BLUE PIECES",  };
+        const std::string _menuItemsGameMode[2] { "PLAY WITH DARK PIECES", "PLAY WITH LIGHT PIECES" };
         const std::string _sMenuTitleLevel= "SELECT OPPONENT STRENGTH:";
         const std::string _menuItemsLevel[4] { "VERY EASY", "EASY", "MEDIUM", "HARD" };
 
         DrawHelper::Color _colorNotation = {9, 65, 50};
         //const DrawHelper::Color colorLight = {255, 255, 136};
-        const DrawHelper::Color _colorTileLight = {245, 245, 245};
+        //TODO move to separate structure style
+        /*const DrawHelper::Color _colorTileLight = {245, 245, 245};
         const DrawHelper::Color _colorTileDark = {93, 162, 45};
+        const DrawHelper::Color _colorRedPiece = {255, 0, 0};
+        const DrawHelper::Color _colorRedPiece2 = {177, 0, 0};
+        const DrawHelper::Color _colorBluePiece = {0,109,211};
+        const DrawHelper::Color _colorBluePiece2 = {0,0,155};*/
+        const DrawHelper::Color _colorTileLight = {245, 245, 245};
+        //const DrawHelper::Color _colorTileDark = {198, 148, 125};
+        const DrawHelper::Color _colorTileDark = {93, 162, 45};
+        //const DrawHelper::Color _colorRedPiece = {93, 162, 45};
+        //const DrawHelper::Color _colorRedPiece2 = {0, 127, 0};
+        const DrawHelper::Color _colorDarkPiece = {127, 0, 0};
+        const DrawHelper::Color _colorDarkPiece2 = {79, 37, 29};
+        const DrawHelper::Color _colorLightPiece = {251,217,133};
+        const DrawHelper::Color _colorLightPiece2 = {197,159,80};
+
         const DrawHelper::Color _colorSelection = {200,200,0};
-        const DrawHelper::Color _colorMenuTitle = {255, 0, 0};
-        const DrawHelper::Color _colorMenuItem = {38, 144, 205};
+        const DrawHelper::Color _colorMenuTitle1 = {0, 200, 0};
+        const DrawHelper::Color _colorMenuTitle2 = {22, 105, 35};
+        //const DrawHelper::Color _colorMenuItem = {38, 144, 205};
+        const DrawHelper::Color _colorMenuItem = {127, 0, 0};
         const DrawHelper::Color _colorMenuItemSelected = {255, 255, 0};
     };
 }

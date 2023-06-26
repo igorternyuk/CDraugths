@@ -16,6 +16,7 @@ namespace draughts
         virtual std::string TileToNotation(const Tile& tile) const override;
         virtual GameStatus GetGameStatus() const override;
         bool MakeMove(const Move &move) override;
+        virtual bool UndoLastMove() override;
         virtual void Reset() override;
     public:
         enum
