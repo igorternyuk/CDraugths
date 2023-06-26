@@ -82,15 +82,15 @@ GameStatus BoardPortuguese::GetGameStatus() const
         }
     }
 
-    if(_count12 >= 2 * 12)
+    if(_mapDrawRep.at(COUNT_12).first >= 2 * COUNT_12)
     {
         std::cout << "No king capture within 12 moves!\n";
         return GameStatus::DRAW;
     }
 
-    if(_moveLog.size() >= 2 * 40)
+    if(_moveLog.size() >= 2 * COUNT_20)
     {
-        if(_count20 >= 2 * 40)
+        if(_mapDrawRep.at(COUNT_20).first >= 2 * COUNT_20)
         {
             std::cout << "Draw because of more then 20 sequential kings moves!\n";
             return GameStatus::DRAW;
@@ -105,16 +105,16 @@ bool BoardPortuguese::MakeMove(const Move &move)
     //return Board::MakeMove(move);
     if(Board::MakeMove(move))
     {
-        const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
         _hash = GetHash();
         _mapRep[_hash]++;
 
         int aCount[4];
         CalcPieceCount(aCount);
 
-        if(aCount[RED_PIECE] == 0 && aCount[RED_KING]  == 3 && aCount[BLUE_KING] == 1)
+        if((aCount[RED_PIECE] == 0 && aCount[RED_KING]  == 3 && aCount[BLUE_KING] == 1)
+                || (aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING]  == 3 && aCount[RED_KING] == 1))
         {
-            if(_count12 == 0)
+            if(_mapDrawRep.at(COUNT_12).first == 0)
             {
                 const auto& redPieces = GetPieces(Alliance::DARK);
                 bool bStartCount12 = std::any_of(redPieces.begin(), redPieces.end(), [&](const auto& p)
@@ -122,37 +122,56 @@ bool BoardPortuguese::MakeMove(const Move &move)
                     return IsPieceOnTheMainDiagonal(*p.second);
                 });
                 if(bStartCount12)
-                    ++_count12;
-            }
-
-            if(_count12 > 0)
-                ++_count12;
-        }
-        else if(aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING] == 3 && aCount[BLUE_PIECE] == 0)
-        {
-            if(_count12 == 0)
-            {
-                const auto& bluePieces = GetPieces(Alliance::LIGHT);
-                bool bStartCount12 = std::any_of(bluePieces.begin(), bluePieces.end(), [&](const auto& p)
                 {
-                    return IsPieceOnTheMainDiagonal(*p.second);
-                });
-                if(bStartCount12)
-                    ++_count12;
+                    ++_mapDrawRep[COUNT_12].first;
+                    _mapDrawRep[COUNT_12].second = true;
+                }
+                else
+                    _mapDrawRep[COUNT_12].second = false;
             }
 
-            if(_count12 > 0)
-                ++_count12;
+            if(_mapDrawRep[COUNT_12].first > 0)
+            {
+                ++_mapDrawRep[COUNT_12].first;
+                _mapDrawRep[COUNT_12].second = true;
+            }
+            else
+                _mapDrawRep[COUNT_12].second = false;
         }
 
+        const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
         if(move.IsJump() || !piece.IsKing())
-            _count20 = 0;
+            _mapDrawRep[COUNT_20].first = 0;
         else
-            ++_count20;
+            ++_mapDrawRep[COUNT_20].first;
+        _mapDrawRep[COUNT_20].second = true;
 
         return true;
     }
     return false;
+}
+
+bool BoardPortuguese::UndoLastMove()
+{
+    _hash = GetHash();
+    if(!_mapRep.empty() && _mapRep.find(_hash) != _mapRep.end() )
+    {
+        _mapRep[_hash]--;
+    }
+
+    if(Board::UndoLastMove())
+    {
+        for(auto& [k, p]: _mapDrawRep)
+        {
+            if(p.first > 0)
+                --p.first;
+            p.second = false;
+        }
+
+        return true;
+    }
+    return false;
+
 }
 
 void BoardPortuguese::Reset()

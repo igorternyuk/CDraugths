@@ -54,16 +54,50 @@ Notation draughts::BoardTurkish::GetNotation() const
 
 bool draughts::BoardTurkish::MakeMove(const Move &move)
 {
-    return Board::MakeMove(move);
+    if(Board::MakeMove(move))
+    {
+        int aCount[4];
+        CalcPieceCount(aCount);
+        int reds_total = aCount[RED_PIECE] + aCount[RED_KING] ;
+        int blues_total = aCount[BLUE_PIECE] + aCount[BLUE_KING];
+        int total = reds_total + blues_total;
+        if(total == 2)
+        {
+            ++_mapDrawRep[COUNT_2].first;
+            _mapDrawRep[COUNT_2].second = true;
+        }
+        else
+            _mapDrawRep[COUNT_2].second = false;
+
+        return true;
+    }
+    return false;
 }
 
 bool draughts::BoardTurkish::UndoLastMove()
 {
-    return Board::UndoLastMove();
+    if(Board::UndoLastMove())
+    {
+        for(auto& [k, p]: _mapDrawRep)
+        {
+            if(p.first > 0)
+                --p.first;
+            p.second = false;
+        }
+
+        return true;
+    }
+    return false;
 }
 
 draughts::GameStatus draughts::BoardTurkish::GetGameStatus() const
 {
+    if(_mapDrawRep.at(COUNT_2).first >= 2 * COUNT_2)
+    {
+        std::cout << "No king capture within 12 moves!\n";
+        return GameStatus::DRAW;
+    }
+
     return Board::GetGameStatus();
 }
 
@@ -71,6 +105,11 @@ draughts::GameStatus draughts::BoardTurkish::GetGameStatus() const
 void draughts::BoardTurkish::Reset()
 {
     Board::Reset();
+    for(auto& [k,p]: _mapDrawRep)
+    {
+        p.first = 0;
+        p.second = false;
+    }
 }
 
 void draughts::BoardTurkish::SetupTestPosition()

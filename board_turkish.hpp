@@ -23,6 +23,12 @@ namespace draughts
         {
             BOARD_SIZE = 8,
             NUM_PIECE_ROWS = 2,
+            COUNT_2 = 2,
+        };
+    protected:
+        std::map<int,std::pair<int, bool>> _mapDrawRep
+        {
+            {COUNT_2, {0, false}},
         };
     protected:
         void SetupTestPosition();
