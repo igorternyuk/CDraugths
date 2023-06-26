@@ -23,18 +23,20 @@ namespace draughts
             CANADIAN,
             CHECKRERS,
             PORTUGUESE,
-            FRISIAN,
-            /*
-            TURKISH,*/
+            FRISIAN,            
+            TURKISH,
             NUM_OF_GAME_TYPES,
         };
 
-        enum Level
+        enum class Level
         {
+            eBEGINNER,
             eVERY_EASY,
             eEASY,
             eMEDIUM,
             eHARD,
+            eVERY_HARD,
+            eHARDEST,
         };
 
     private:
@@ -47,6 +49,7 @@ namespace draughts
     public:
         void SetupNewGame(Type type, Mode mode, int searchDepth = 8);
         void Play();
+        int MapLevelToSearchDepth(Level level);
         Board &GetBoard();
         GameStatus GetStatus();
         void Update();

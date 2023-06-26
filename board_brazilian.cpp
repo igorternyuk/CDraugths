@@ -36,7 +36,7 @@ int BoardBrazilian::GetPieceRows() const
     return NUM_PIECE_ROWS;
 }
 
-Board::Notation BoardBrazilian::GetNotation() const
+Notation BoardBrazilian::GetNotation() const
 {
     return Notation::ALGEBRAIC;
 }

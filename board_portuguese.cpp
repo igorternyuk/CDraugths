@@ -53,7 +53,7 @@ int BoardPortuguese::GetPieceRows() const
     return NUM_PIECE_ROWS;
 }
 
-Board::Notation BoardPortuguese::GetNotation() const
+Notation BoardPortuguese::GetNotation() const
 {
     return Notation::NUMERIC;
 }

@@ -8,6 +8,7 @@ namespace draughts
     public:
         RulesFrisian();
     public:
+        Alliance FirstMoveAlliance() const override;
         virtual void CalcLegalMoves(const Position& position, Alliance alliance, std::vector<Move> &moves) const override;
         virtual int GetPieceValue(const Piece& piece) const override;
     protected:

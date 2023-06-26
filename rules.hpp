@@ -39,8 +39,9 @@ namespace draughts
             eUP,
         };
 
-        inline static constexpr int offsetX_[8] { +1, -1, +1, -1, -1, +1, 0, 0 };
-        inline static constexpr int offsetY_[8] { -1, -1, +1, +1,  0, 0, -1, +1 };
+        inline static constexpr int _offsetX[8] { +1, -1, +1, -1, -1, +1, 0, 0 };
+        inline static constexpr int _offsetY[8] { -1, -1, +1, +1, 0, 0, -1, +1 };
+        inline static constexpr int _oppositeDir[8] { 3, 2, 1, 0, 5, 4, 7, 6 };
     };
 }
 

@@ -11,7 +11,7 @@ namespace draughts
         virtual std::shared_ptr<Position> MakeCopy() const override;
         virtual int GetBoardSize() const override;
         virtual int GetPieceRows() const override;
-        virtual Board::Notation GetNotation() const override;
+        virtual Notation GetNotation() const override;
         virtual bool MakeMove(const Move& move) override;
         virtual bool UndoLastMove() override;
         virtual std::string TileToNotation(const Tile& tile) const override;
@@ -44,17 +44,6 @@ namespace draughts
         int _oldBalance = 0;
         std::map<unsigned int, int> _mapRep;
     private:
-        inline static std::map<int, std::string> _mapAlgebraicNotaion
-        {
-            { 0, "a"},
-            { 1, "b"},
-            { 2, "c"},
-            { 3, "d"},
-            { 4, "e"},
-            { 5, "f"},
-            { 6, "g"},
-            { 7, "h"}
-        };
     };
 }
 

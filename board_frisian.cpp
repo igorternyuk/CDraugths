@@ -130,7 +130,7 @@ int BoardFrisian::GetPieceRows() const
     return NUM_PIECE_ROW;
 }
 
-Board::Notation BoardFrisian::GetNotation() const
+Notation BoardFrisian::GetNotation() const
 {
     return Notation::NUMERIC;
 }

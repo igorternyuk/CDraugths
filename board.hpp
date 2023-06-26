@@ -1,5 +1,6 @@
 #pragma once
 
+#include "notation.hpp"
 #include "piece.hpp"
 #include "tile.hpp"
 #include "position.hpp"
@@ -21,12 +22,6 @@ namespace draughts
     {
     public:
         explicit Board(std::shared_ptr<Rules>, int N);
-    public:
-        enum class Notation
-        {
-            ALGEBRAIC,
-            NUMERIC,
-        };
     public:
         ////// Interface Posiiton begin //////
 
@@ -78,14 +73,16 @@ namespace draughts
         bool IsValidCoords(int row, int col) const;
         void CalcPieceCount(int aCount[4]) const;
     protected:
-        std::vector<Tile> _grid;
-        std::shared_ptr<Rules> _rules;
-        std::vector<Move> _moveLog;
-        std::map<Alliance,std::map<int, Piece*>> _mapOfPieces;
         mutable bool _bValidLegalMoves;
         mutable std::vector<Move> _legalMoves;
         mutable bool _bValidHash;
         mutable unsigned int _hash;
+        mutable bool _bGameStatusChanged;
+        GameStatus _gameStatus;
         bool _log = true;
+        std::vector<Tile> _grid;
+        std::shared_ptr<Rules> _rules;
+        std::vector<Move> _moveLog;
+        std::map<Alliance,std::map<int, Piece*>> _mapOfPieces;
     };
 }

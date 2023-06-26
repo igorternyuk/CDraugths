@@ -41,7 +41,7 @@ int BoardCheckers::GetPieceRows() const
     return NUM_PIECE_ROWS;
 }
 
-Board::Notation BoardCheckers::GetNotation() const
+Notation BoardCheckers::GetNotation() const
 {
     return Notation::NUMERIC;
 }

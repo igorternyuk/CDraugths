@@ -22,30 +22,32 @@ void RulesInternational::CalcLegalMoves(const Position &position, Alliance allia
 
     if(!moves.empty())
     {
-        RemoveSubsets(moves);
-
-        for(auto& m: moves)
+        if(moves.size() > 1)
         {
-            if(CheckIfCoronate(position, m))
-                m.SetCoronation(true);
+            RemoveSubsets(moves);
+
+            for(auto& m: moves)
+            {
+                if(CheckIfCoronate(position, m))
+                    m.SetCoronation(true);
+            }
+
+            //Majority rule
+            std::sort(moves.begin(), moves.end(), [](const auto& m1, const auto& m2){
+                int cnt1 = m1.StepCount();
+                int cnt2 = m2.StepCount();
+                return cnt1 > cnt2;
+            });
+
+            const int maxCapture = moves[0].StepCount();
+
+            auto it_ = std::remove_if(moves.begin(), moves.end(), [maxCapture](auto &move)
+            {
+                return move.StepCount() < maxCapture;
+            });
+
+            moves.erase(it_, moves.end());
         }
-
-        //Majority rule
-        std::sort(moves.begin(), moves.end(), [](const auto& m1, const auto& m2){
-            int cnt1 = m1.StepCount();
-            int cnt2 = m2.StepCount();
-            return cnt1 > cnt2;
-        });
-
-        const int maxCapture = moves[0].StepCount();
-
-        auto it_ = std::remove_if(moves.begin(), moves.end(), [maxCapture](auto &move)
-        {
-            return move.StepCount() < maxCapture;
-        });
-
-        moves.erase(it_, moves.end());
-
         return;
     }
 
@@ -63,8 +65,8 @@ void RulesInternational::CalcLegalMoves(const Position &position, Alliance allia
             {
                 for(int n = 1; n < BOARD_SIZE; ++n)
                 {
-                    int nx = x + n * offsetX_[dir];
-                    int ny = y + n * offsetY_[dir];
+                    int nx = x + n * _offsetX[dir];
+                    int ny = y + n * _offsetY[dir];
                     const Tile& tile = position.GetTile(ny, nx);
                     if(!tile.IsValid() || !tile.IsEmpty())
                         break;
@@ -120,8 +122,8 @@ void RulesInternational::CalcAllJumps(const Position &position, const Piece &pie
 
         for (int n = 1; n <= N; ++n)
         {
-            int dx = n * offsetX_[dir];
-            int dy = n * offsetY_[dir];
+            int dx = n * _offsetX[dir];
+            int dy = n * _offsetY[dir];
             int nx = piece.GetCol() + dx;
             int ny = piece.GetRow() + dy;
 

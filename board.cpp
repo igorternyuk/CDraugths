@@ -15,6 +15,9 @@ Board::Board(std::shared_ptr<Rules> rules, int N):
         for(int c = 0; c < N; ++c)
             _grid.push_back(Tile(r, c));
     _moveLog.clear();
+    _gameStatus = GameStatus::PLAY;
+    _bGameStatusChanged = true;
+
 }
 
 void Board::Clear()
@@ -31,6 +34,7 @@ void Board::Reset()
     _legalMoves.clear();
     _bValidHash = false;
     _hash = 0;
+    _bGameStatusChanged = true;
 }
 
 Tile &Board::GetTile(int row, int col)
@@ -165,23 +169,30 @@ bool Board::IsEndgameScenario() const
 
 GameStatus Board::GetGameStatus() const
 {
-    Alliance turn = GetTurn();
+    if(_bGameStatusChanged)
+    {
+        Alliance turn = GetTurn();
 
-    if(turn == Alliance::LIGHT)
-    {
-        std::vector<Move> blueMoves;
-        _rules->CalcLegalMoves(*this, Alliance::LIGHT, blueMoves);
-        if(blueMoves.empty())
-            return GameStatus::RED_WON;
+        if(turn == Alliance::LIGHT)
+        {
+            std::vector<Move> blueMoves;
+            _rules->CalcLegalMoves(*this, Alliance::LIGHT, blueMoves);
+            if(blueMoves.empty())
+                return GameStatus::RED_WON;
+        }
+        else if(turn == Alliance::DARK)
+        {
+           std::vector<Move> redMoves;
+           _rules->CalcLegalMoves(*this, Alliance::DARK, redMoves);
+           if(redMoves.empty())
+               return GameStatus::BLUE_WON;
+        }
+
+        _bGameStatusChanged = false;
+        return GameStatus::PLAY;
     }
-    else if(turn == Alliance::DARK)
-    {
-       std::vector<Move> redMoves;
-       _rules->CalcLegalMoves(*this, Alliance::DARK, redMoves);
-       if(redMoves.empty())
-           return GameStatus::BLUE_WON;
-    }
-    return GameStatus::PLAY;
+
+    return _gameStatus;
 }
 
 bool Board::HasValidTile(int row, int col) const
@@ -273,7 +284,7 @@ bool Board::MakeMove(const Move& move)
     _moveLog.push_back(move);
     _bValidLegalMoves = false;
     _bValidHash = false;
-
+    _bGameStatusChanged = true;
     return true;
 }
 
@@ -319,7 +330,7 @@ bool Board::UndoLastMove()
     _moveLog.shrink_to_fit();
     _bValidLegalMoves = false;
     _bValidHash = false;
-
+    _bGameStatusChanged = true;
     return true;
 }
 

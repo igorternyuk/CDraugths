@@ -26,23 +26,6 @@ void View::FlipBoard()
     _bRotateBoard = !_bRotateBoard;
 }
 
-int View::SearchDepthByLevel(int level)
-{
-    switch(level)
-    {
-        case Game::Level::eVERY_EASY:
-            return 4;
-        case Game::Level::eEASY:
-            return 6;
-        case Game::Level::eMEDIUM:
-            return 8;
-        case Game::Level::eHARD:
-            return 10;
-        default:
-            return 6;
-    };
-}
-
 View* View::GetInstance()
 {
     static View view;
@@ -121,7 +104,8 @@ void View::OnMouseEvent(int button, int state, int x, int y)
             if(button == GLUT_LEFT_BUTTON)
             {
                 _viewMode = ViewMode::eBoard;
-                _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, SearchDepthByLevel(_selectedLevel));
+                 int depth = _game->MapLevelToSearchDepth(static_cast<Game::Level>(_selectedLevel));
+                _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, depth);
 
                 const int width = GetWindowWidth();
                 const int height = GetWindowHeight();
@@ -154,7 +138,7 @@ void View::OnMouseMotion(int x, int y)
     }
     else if(_viewMode == ViewMode::eMenuLevel)
     {
-         _selectedLevel = std::max(0, std::min(3, ((y - 60) / 20)));
+         _selectedLevel = std::max(0, std::min(6, ((y - 60 + 18) / (18 + 18/2))));
     }
 }
 
@@ -195,10 +179,10 @@ void View::DrawLevelMenu()
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleLevel.size()) / 2;
     DrawHelper::DrawWord24(_sMenuTitleLevel.c_str(), titleLeftX, 20, 20, {0, 233, 0});
 
-    for(int i = 0; i < 4; ++i)
+    for(int i = 0; i < 7; ++i)
     {
         int leftX = (GetDefaultWindowWidth() - 20 * _menuItemsLevel[i].size()) / 2;
-        DrawHelper::DrawWord24(_menuItemsLevel[i].c_str(), leftX, 60 + i * 30, 20, i == _selectedLevel ? _colorMenuItemSelected : _colorMenuItem);
+        DrawHelper::DrawWord24(_menuItemsLevel[i].c_str(), leftX, 60 + i * (18+18/2), 20, i == _selectedLevel ? _colorMenuItemSelected : _colorMenuItem);
     }
 }
 
@@ -241,7 +225,8 @@ void View::OnKeyboardEvent(unsigned char key, int x, int y)
         else if(_viewMode == ViewMode::eMenuLevel)
         {
             _viewMode = ViewMode::eBoard;
-            _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, _selectedLevel);
+            int depth = _game->MapLevelToSearchDepth(static_cast<Game::Level>(_selectedLevel));
+            _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, depth);
 
             width = GetWindowWidth();
             height = GetWindowHeight();
@@ -301,7 +286,7 @@ void View::ProcessSpecialKeys(unsigned char key, int x, int y)
         {
             --_selectedLevel;
             if(_selectedLevel < 0)
-                _selectedLevel = 3;
+                _selectedLevel = 6;
         }
     }
     else if(key == GLUT_KEY_DOWN)//enter
@@ -480,7 +465,7 @@ void View::DrawBoard()
             if(_bShowNotation)
             {
                 auto notation = board.GetNotation();
-                if(notation == Board::Notation::ALGEBRAIC)
+                if(notation == Notation::ALGEBRAIC)
                 {
                     std::string sNotation = board.TileToNotation(tile);
                     if(x == 0)
@@ -496,7 +481,7 @@ void View::DrawBoard()
                         DrawHelper::DrawWord24(file, topLeftX + x * TILE_SIZE_PX + TILE_SIZE_PX * 0.47, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX, 10, _colorNotation);
                     }
                 }
-                else if(notation == Board::Notation::NUMERIC)
+                else if(notation == Notation::NUMERIC)
                 {
                     if(tile.IsDark())
                     {

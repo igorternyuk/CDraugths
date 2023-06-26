@@ -39,34 +39,37 @@ void RulesPortuguese::CalcLegalMoves(const Position &position, Alliance alliance
                 m.SetCoronation(true);
         }
 
-        //Majority rule
-        std::sort(moves.begin(), moves.end(), [&](const auto& m1, const auto& m2){
-            int cnt1 = m1.StepCount();
-            int cnt2 = m2.StepCount();
-            if(cnt1 == cnt2) //quality rule
-            {
-                int quality1 = 0, quality2 = 0;
-                for(int i = 0; i < m1.StepCount(); ++i)
-                {
-                    const Step& step1 = m1.GetStep(i);
-                    quality1 += GetPieceValue(step1.GetCaptured());
-                    const Step& step2 = m1.GetStep(i);
-                    quality2 += GetPieceValue(step2.GetCaptured());
-                }
-
-                return quality1 > quality2;
-            }
-            return cnt1 > cnt2;
-        });
-
-        const int maxCapture = moves[0].StepCount();
-
-        auto it_ = std::remove_if(moves.begin(), moves.end(), [maxCapture](auto &move)
+        if(moves.size() > 1)
         {
-            return move.StepCount() < maxCapture;
-        });
+            //Majority rule
+            std::sort(moves.begin(), moves.end(), [&](const auto& m1, const auto& m2){
+                int cnt1 = m1.StepCount();
+                int cnt2 = m2.StepCount();
+                if(cnt1 == cnt2) //quality rule
+                {
+                    int quality1 = 0, quality2 = 0;
+                    for(int i = 0; i < m1.StepCount(); ++i)
+                    {
+                        const Step& step1 = m1.GetStep(i);
+                        quality1 += GetPieceValue(step1.GetCaptured());
+                        const Step& step2 = m1.GetStep(i);
+                        quality2 += GetPieceValue(step2.GetCaptured());
+                    }
 
-        moves.erase(it_, moves.end());
+                    return quality1 > quality2;
+                }
+                return cnt1 > cnt2;
+            });
+
+            const int maxCapture = moves[0].StepCount();
+
+            auto it_ = std::remove_if(moves.begin(), moves.end(), [maxCapture](auto &move)
+            {
+                return move.StepCount() < maxCapture;
+            });
+
+            moves.erase(it_, moves.end());
+        }
 
         return;
     }
@@ -85,8 +88,8 @@ void RulesPortuguese::CalcLegalMoves(const Position &position, Alliance alliance
             {
                 for(int n = 1; n <= 1; ++n)
                 {
-                    int nx = x + n * offsetX_[dir];
-                    int ny = y + n * offsetY_[dir];
+                    int nx = x + n * _offsetX[dir];
+                    int ny = y + n * _offsetY[dir];
                     const Tile& tile = position.GetTile(ny, nx);
                     if(!tile.IsValid() || !tile.IsEmpty())
                         break;
@@ -149,8 +152,8 @@ void RulesPortuguese::CalcAllJumps(const Position &position, const Piece &piece,
 
         for (int n = 1; n <= N; ++n)
         {
-            int dx = n * offsetX_[dir];
-            int dy = n * offsetY_[dir];
+            int dx = n * _offsetX[dir];
+            int dy = n * _offsetY[dir];
             int nx = piece.GetCol() + dx;
             int ny = piece.GetRow() + dy;
 

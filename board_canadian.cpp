@@ -35,7 +35,7 @@ int BoardCanadian::GetPieceRows() const
     return NUM_PIECE_ROWS;
 }
 
-Board::Notation BoardCanadian::GetNotation() const
+Notation BoardCanadian::GetNotation() const
 {
     return Notation::NUMERIC;
 }

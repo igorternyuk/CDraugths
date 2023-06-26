@@ -77,7 +77,7 @@ int BoardDraugths64::GetPieceRows() const
     return NUM_PIECES_FOR_ROW;
 }
 
-Board::Notation BoardDraugths64::GetNotation() const
+Notation BoardDraugths64::GetNotation() const
 {
     return Notation::ALGEBRAIC;
 }

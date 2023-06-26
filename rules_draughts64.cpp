@@ -23,7 +23,8 @@ void RulesDraughts64::CalcLegalMoves(const Position &position, Alliance alliance
 
     if(!moves.empty())
     {
-        RemoveSubsets(moves);
+        if(moves.size() > 1)
+            RemoveSubsets(moves);
         return;
     }
 
@@ -41,8 +42,8 @@ void RulesDraughts64::CalcLegalMoves(const Position &position, Alliance alliance
             {
                 for(int n = 1; n < BOARD_SIZE; ++n)
                 {
-                    int nx = x + n * offsetX_[dir];
-                    int ny = y + n * offsetY_[dir];
+                    int nx = x + n * _offsetX[dir];
+                    int ny = y + n * _offsetY[dir];
                     const Tile& tile = position.GetTile(ny, nx);
                     if(!tile.IsValid() || !tile.IsEmpty())
                         break;
@@ -98,8 +99,8 @@ void RulesDraughts64::CalcAllJumps(const Position &position, const Piece &piece,
 
         for (int n = 1; n <= N; ++n)
         {
-            int dx = n * offsetX_[dir];
-            int dy = n * offsetY_[dir];
+            int dx = n * _offsetX[dir];
+            int dy = n * _offsetY[dir];
             int nx = piece.GetCol() + dx;
             int ny = piece.GetRow() + dy;
 

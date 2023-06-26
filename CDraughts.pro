@@ -15,6 +15,7 @@ SOURCES += \
     board_international.cpp \
     board_polish.cpp \
     board_portuguese.cpp \
+    board_turkish.cpp \
     drawhelper.cpp \
     euristic_default.cpp \
         main.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     board_international.hpp \
     board_polish.hpp \
     board_portuguese.hpp \
+    board_turkish.hpp \
     drawhelper.hpp \
     euristic_default.hpp \
     evaluation_strategy.hpp \
@@ -61,6 +63,7 @@ HEADERS += \
     menu.hpp \
     move.hpp \
     movestrategy.hpp \
+    notation.hpp \
     piece.hpp \
     player.hpp \
     player_alphabeta.hpp \

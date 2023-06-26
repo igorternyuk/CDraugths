@@ -6,6 +6,7 @@
 #include "board_checkers.hpp"
 #include "board_portuguese.hpp"
 #include "board_frisian.hpp"
+#include "board_turkish.hpp"
 #include "player_human.hpp"
 #include "player_alphabeta.hpp"
 #include "rules.hpp"
@@ -113,6 +114,10 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     {
         _board = std::make_shared<BoardFrisian>();
     }
+    else if(type == Type::TURKISH)
+    {
+        _board = std::make_shared<BoardTurkish>();
+    }
 
     if(mode == Mode::HUMAN_CPU)
     {
@@ -154,6 +159,37 @@ std::vector<std::pair<int,int>> Game::GetSelected() const
         }
     }
     return selection;
+}
+
+int Game::MapLevelToSearchDepth(Level level)
+{
+    int searchDepth = 5;
+    switch(level)
+    {
+        case Level::eBEGINNER:
+            searchDepth = 4;
+            break;
+        case Level::eEASY:
+            searchDepth = 5;
+            break;
+        case Level::eMEDIUM:
+            searchDepth = 6;
+            break;
+        case Level::eHARD:
+            searchDepth = 7;
+            break;
+        case Level::eVERY_HARD:
+            searchDepth = 8;
+            break;
+        case Level::eHARDEST:
+            searchDepth = 9;
+            break;
+        break;
+        default:
+            searchDepth = 5;
+    }
+
+    return searchDepth;
 }
 void Game::Reset()
 {

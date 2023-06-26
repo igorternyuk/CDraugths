@@ -35,7 +35,7 @@ int BoardPolish::GetPieceRows() const
     return NUM_PIECE_ROWS;
 }
 
-Board::Notation BoardPolish::GetNotation() const
+Notation BoardPolish::GetNotation() const
 {
     return Notation::NUMERIC;
 }
