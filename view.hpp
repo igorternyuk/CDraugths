@@ -82,7 +82,7 @@ namespace view
             "TURKISH",
         };
         const std::string _sMenuTitleGameMode = "SELECT GAME MODE:";
-        const std::string _menuItemsGameMode[2] { "PLAY WITH DARK PIECES", "PLAY WITH LIGHT PIECES" };
+        const std::string _menuItemsGameMode[2] { "PLAY WITH LIGHT PIECES", "PLAY WITH DARK PIECES" };
         const std::string _sMenuTitleLevel= "SELECT OPPONENT STRENGTH:";
         const std::string _menuItemsLevel[7] { "BEGINNER", "VERY EASY", "EASY", "MEDIUM", "HARD", "VERY HARD", "HARDEST" };
 
@@ -103,8 +103,8 @@ namespace view
         const DrawHelper::Color _colorDarkPiece = {180, 0, 0};
         const DrawHelper::Color _colorDarkPiece2 = {79, 37, 29};
         const DrawHelper::Color _colorLightPiece = {251,217,133};
-        //const DrawHelper::Color _colorLightPiece2 = {197,159,80};
-        const DrawHelper::Color _colorLightPiece2 = {182,139,139};
+        const DrawHelper::Color _colorLightPiece2 = {197,159,80};
+        //const DrawHelper::Color _colorLightPiece = {182,139,139};
 
         const DrawHelper::Color _colorSelection = {200,200,0};
         const DrawHelper::Color _colorMenuTitle1 = {0, 200, 0};

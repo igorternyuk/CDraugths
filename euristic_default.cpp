@@ -11,22 +11,23 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
 {
     int score = 0;
 
-    std::vector<Move> redLegalMoves;
-    position.LegalMoves(Alliance::DARK, redLegalMoves);
-    std::vector<Move> blueLegalMoves;
-    position.LegalMoves(Alliance::LIGHT, blueLegalMoves);
+    std::vector<Move> lightLegalMoves;
+    position.LegalMoves(Alliance::LIGHT, lightLegalMoves);
+    std::vector<Move> darkLegalMoves;
+    position.LegalMoves(Alliance::DARK, lightLegalMoves);
 
-    /*if(redLegalMoves.empty())
-        return -10000;
-    if(blueLegalMoves.empty())
-        return 10000;*/
-    score += 10*redLegalMoves.size();
-    score -= 10*blueLegalMoves.size();
+    if(lightLegalMoves.empty())
+        return -100000000;
+    if(lightLegalMoves.empty())
+        return 100000000;
+
+    score += 10*lightLegalMoves.size();
+    score -= 10*darkLegalMoves.size();
 
     const int BOARD_SIZE = position.GetBoardSize();
 
-    int num_red_kings = 0;
-    int num_blue_kings = 0;
+    int num_dark_kings = 0;
+    int num_light_kings = 0;
     for(int y = 0; y < BOARD_SIZE; ++y)
     {
         for(int x = 0; x < BOARD_SIZE; ++x)
@@ -37,10 +38,10 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
                 const Piece& piece = currTile.GetPiece();
                 const int pieceValue = rules.GetPieceValue(piece);
 
-                if(currTile.GetPiece().GetAlliance() == Alliance::DARK)
+                if(currTile.GetPiece().GetAlliance() == Alliance::LIGHT)
                 {
                     if(piece.IsKing())
-                        num_red_kings++;
+                        num_light_kings++;
                     score += pieceValue;
                     score += (BOARD_SIZE - y);
                     if(x == 0 || x == BOARD_SIZE)
@@ -56,10 +57,10 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
                     if(x == BOARD_SIZE / 2 && y == BOARD_SIZE - 1)
                         score += 3 * pieceValue;
                 }
-                else if(currTile.GetPiece().GetAlliance() == Alliance::LIGHT)
+                else if(currTile.GetPiece().GetAlliance() == Alliance::DARK)
                 {
                     if(piece.IsKing())
-                        num_red_kings--;
+                        num_dark_kings--;
                     score -= pieceValue;
                     score -= (y + 1);
                     if(x == 0 || x == BOARD_SIZE)
@@ -79,6 +80,6 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
         }
     }
 
-    score += 10 * (num_red_kings - num_blue_kings);
+    score += 10 * (num_light_kings - num_dark_kings);
     return score;
 }

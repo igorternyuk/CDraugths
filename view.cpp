@@ -52,7 +52,7 @@ void View::OnMouseEvent(int button, int state, int x, int y)
                         int mx = x / TILE_SIZE_PX;
                         int my = y / TILE_SIZE_PX;
 
-                        std::cout << "mx = " << mx << " my = " << my << std::endl;
+                        //std::cout << "mx = " << mx << " my = " << my << std::endl;
                         if(button == GLUT_LEFT_BUTTON)
                         {
                             if(_bRotateBoard)
@@ -82,7 +82,6 @@ void View::OnMouseEvent(int button, int state, int x, int y)
             if(button == GLUT_LEFT_BUTTON)
             {
                 _viewMode = ViewMode::eMenuGameMode;
-                //glutPostRedisplay();
             }
         }
     }
@@ -93,7 +92,6 @@ void View::OnMouseEvent(int button, int state, int x, int y)
             if(button == GLUT_LEFT_BUTTON)
             {
                 _viewMode = ViewMode::eMenuLevel;
-                //glutPostRedisplay();
             }
         }
     }
@@ -221,6 +219,8 @@ void View::OnKeyboardEvent(unsigned char key, int x, int y)
         else if(_viewMode == ViewMode::eMenuGameMode)
         {
             _viewMode = ViewMode::eMenuLevel;
+            if(_selectedGameMode == (int)draughts::Game::Mode::CPU_HUMAN)
+                _bRotateBoard = true;
         }
         else if(_viewMode == ViewMode::eMenuLevel)
         {

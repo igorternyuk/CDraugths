@@ -77,7 +77,7 @@ GameStatus BoardPortuguese::GetGameStatus() const
     {
         if(_mapRep.at(_hash) >= 3)
         {
-            std::cout << "Draw by threefold repetition!\n";
+            //std::cout << "Draw by threefold repetition!\n";
             return GameStatus::DRAW;
         }
     }

@@ -20,7 +20,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
 {
     Move move;
     Alliance player_alliance = player.GetAlliance();
-    Alliance opponent_alliance = player.GetOpponentAlliance();
+    //Alliance opponent_alliance = player.GetOpponentAlliance();
     std::vector<Move> lolm;
     position->LegalMoves(player_alliance, lolm);
 
@@ -55,7 +55,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
     int moveNumber = position->GetMoveLog().size();
 
     std::vector<std::pair<int, Move>> vBestMoves;
-    if(opponent_alliance == Alliance::DARK) // CPU is minimizing player
+    if(player_alliance == Alliance::DARK)
     {
         std::cout << position->ToString() << std::endl;
         int minVal = INF;
@@ -64,15 +64,6 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             int number = moveNumber;
             std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
             position->MakeMove(*it); //CPU make the move
-            /*auto bluePieces = position->GetPieces(Alliance::BLUE);
-            std::cout << position->ToString() << std::endl;
-            std::cout << "Blue pieces: \n";
-            for(const auto& [i, p] : bluePieces)
-            {
-                Piece piece = *p;
-                std::cout << "px = " << piece.GetCol()  << " py = " << piece.GetRow() << "\n";
-            }
-            std::cout << std::endl;*/
 
             std::string curr_line = position->MoveToNotation(*it);
             std::shared_ptr<Position> positionCopy = position->MakeCopy();
@@ -119,10 +110,10 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             }
         }
     }
-    else if(opponent_alliance == Alliance::LIGHT)
+    else if(player_alliance == Alliance::LIGHT)
     {
         int maxVal = -INF;
-        for(auto it = lolm.begin(); it != lolm.end(); ++it) // CPU is maximizing player
+        for(auto it = lolm.begin(); it != lolm.end(); ++it)
         {
             int number = moveNumber;
             std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
@@ -181,24 +172,29 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
         std::cout << "Total move time = " << totalMoveTime << "ms" << std::endl;
     }
 
-    std::sort(vBestMoves.begin(), vBestMoves.end(), [](const auto& a, const auto& b){
-        return a.first > b.first;
-    });
+    if(vBestMoves.size() > 1)
+    {
+        std::sort(vBestMoves.begin(), vBestMoves.end(), [&](const auto& a, const auto& b){
+            return player_alliance == Alliance::DARK ? a.first < b.first : a.first > b.first;
+        });
 
-    int bestScore = vBestMoves.front().first;
+        int bestScore = vBestMoves.front().first;
 
-    auto it_ = std::remove_if(vBestMoves.begin(), vBestMoves.end(), [bestScore](const auto& a){
-        return a.first < bestScore;
-    });
+        auto it_ = std::remove_if(vBestMoves.begin(), vBestMoves.end(), [player_alliance, bestScore](const auto& a){
+            return player_alliance == Alliance::DARK ? a.first > bestScore : a.first < bestScore;;
+        });
 
-    vBestMoves.erase(it_, vBestMoves.end());
+        vBestMoves.erase(it_, vBestMoves.end());
 
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(0, vBestMoves.size());
-    const int rndIdxFrom = dist(mt);
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_real_distribution<double> dist(0, vBestMoves.size());
+        const int rndIdxFrom = dist(mt);
 
-    return vBestMoves.at(rndIdxFrom).second;
+        return vBestMoves.at(rndIdxFrom).second;
+    }
+
+    return vBestMoves.front().second;
 }
 
 MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::max(std::shared_ptr<Position> position, int depth, int alpha, int beta, std::string curr_line)
@@ -220,7 +216,7 @@ MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::max(std::shared_ptr<Position> pos
 
     int value = -INF;
     std::vector<Move> lolm; // list of legal moves
-    position->LegalMoves(Alliance::DARK, lolm);
+    position->LegalMoves(Alliance::LIGHT, lolm);
 
     Evaluation evalBest;
     for(auto it = lolm.begin(); it != lolm.end(); ++it)
@@ -268,7 +264,7 @@ MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::min(std::shared_ptr<Position> pos
 
     int value = INF;
     std::vector<Move> lolm; // list of legal moves
-    position->LegalMoves(Alliance::LIGHT, lolm);
+    position->LegalMoves(Alliance::DARK, lolm);
 
     Evaluation evalBest;
     for(auto it = lolm.begin(); it != lolm.end(); ++it)

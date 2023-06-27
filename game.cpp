@@ -63,7 +63,7 @@ void Game::UndoLastMove()
     if(!log.empty())
     {
         _board->UndoLastMove();
-        _lastMove = log.back();;
+        _lastMove = log.back();
         SwitchTurn();
     }
 }
@@ -126,8 +126,8 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     }
     else if(mode == Mode::CPU_HUMAN)
     {
-        _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::DARK, searchDepth);
-        _playerRed = std::make_shared<PlayerHuman>(Alliance::LIGHT);
+        _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::LIGHT, searchDepth);
+        _playerRed = std::make_shared<PlayerHuman>(Alliance::DARK);
     }
 
     _mode = mode;

@@ -358,13 +358,13 @@ std::string Board::ToString() const
             if(tile.HasPiece())
             {
                 Piece p = tile.GetPiece();
-                if(p.GetAlliance() == Alliance::DARK)
+                if(p.GetAlliance() == Alliance::LIGHT)
                 {
-                    line += p.IsKing() ? "[R]" : "[r]";
+                    line += p.IsKing() ? "[L]" : "[l]";
                 }
-                else if(p.GetAlliance() == Alliance::LIGHT)
+                else if(p.GetAlliance() == Alliance::DARK)
                 {
-                    line += p.IsKing() ? "[B]" : "[b]";
+                    line += p.IsKing() ? "[D]" : "[d]";
                 }
             }
             else

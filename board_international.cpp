@@ -113,8 +113,8 @@ GameStatus BoardInternational::GetGameStatus() const
     {
         if(_mapRepBlue.at(_hash) >= 3)
         {
-            if(_log)
-                std::cout << "Draw by threefold repetition!\n";
+           // if(_log)
+           //     std::cout << "Draw by threefold repetition!\n";
             return GameStatus::DRAW;
         }
     }
@@ -123,8 +123,8 @@ GameStatus BoardInternational::GetGameStatus() const
     {
         if(_mapRepRed.at(_hash) >= 3)
         {
-            if(_log)
-                std::cout << "Draw by threefold repetition!\n";
+            //if(_log)
+            //    std::cout << "Draw by threefold repetition!\n";
             return GameStatus::DRAW;
         }
     }

@@ -11,8 +11,9 @@ namespace draughts
         static Game* GetInstance();
         enum class Mode
         {
+            HUMAN_CPU,
             CPU_HUMAN,
-            HUMAN_CPU,           
+
         };
 
         enum Type
