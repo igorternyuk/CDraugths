@@ -20,7 +20,9 @@ int RulesPortuguese::GetPieceValue(const Piece &piece) const
 
 void RulesPortuguese::CalcLegalMoves(const Position &position, Alliance alliance, std::vector<Move> &moves) const
 {
-   moves.clear();
+    moves.clear();
+
+    const int BOARD_SIZE =position.GetBoardSize();
 
     auto pieces = position.GetPieces(alliance);
     for(const auto& [i,p]: pieces)
@@ -82,11 +84,12 @@ void RulesPortuguese::CalcLegalMoves(const Position &position, Alliance alliance
         const int x = piece.GetCol();
         const int y = piece.GetRow();
         const Tile& currTile = position.GetTile(y, x);
+        int N = piece.IsKing() ? BOARD_SIZE - 1 : 2;
         if(piece.IsKing())
         {
             for(int dir = 0; dir < 4; ++dir)
             {
-                for(int n = 1; n <= 1; ++n)
+                for(int n = 1; n <= N; ++n)
                 {
                     int nx = x + n * _offsetX[dir];
                     int ny = y + n * _offsetY[dir];
@@ -159,7 +162,7 @@ void RulesPortuguese::CalcAllJumps(const Position &position, const Piece &piece,
 
             current = position.GetTile(ny, nx);
             if(current == Tile::NULL_TILE)
-                break;
+                continue;
 
             if(targetDetected)
             {
@@ -195,6 +198,7 @@ void RulesPortuguese::CalcAllJumps(const Position &position, const Piece &piece,
                         if(p.IsKing() || move.StepCount() < PIECE_CAPTURE_LIMIT)
                         {
                             CalcAllJumps(position, p, move, legalMoves);
+                            legalMoves.push_back(move);
                             move = oldMove;
                         }
                     }

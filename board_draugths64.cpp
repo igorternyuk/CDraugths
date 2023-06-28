@@ -21,8 +21,8 @@ BoardDraugths64::BoardDraugths64(): Board(std::make_shared<RulesDraughts64>(), B
 
 void BoardDraugths64::SetupInitialPosition()
 {
-    Board::SetupInitialPosition();
-    //SetupTestPosition();
+    //Board::SetupInitialPosition();
+    SetupTestPosition();
 }
 
 void BoardDraugths64::Reset()
@@ -41,25 +41,33 @@ void BoardDraugths64::SetupTestPosition()
 {
     Reset();
     Clear();
-    SetPiece(0,3,Alliance::DARK, false);
-    SetPiece(0,7,Alliance::DARK, false);
-    SetPiece(1,4,Alliance::DARK, false);
-    SetPiece(1,6,Alliance::DARK, false);
-    SetPiece(2,3,Alliance::DARK, false);
-    SetPiece(2,5,Alliance::DARK, false);
-    SetPiece(2,7,Alliance::DARK, false);
-    SetPiece(5,0,Alliance::DARK, false);
-    SetPiece(3,0,Alliance::DARK, false);
 
+    const std::string board_map[8][8]
+    {
+        {"[ ]","[.]","[ ]","[d]","[ ]","[d]","[ ]","[d]"},
+        {"[.]","[ ]","[.]","[ ]","[d]","[ ]","[d]","[ ]"},
+        {"[ ]","[.]","[ ]","[d]","[ ]","[d]","[ ]","[d]"},
+        {"[.]","[ ]","[l]","[ ]","[.]","[ ]","[.]","[ ]"},
+        {"[ ]","[.]","[ ]","[l]","[ ]","[.]","[ ]","[.]"},
+        {"[.]","[ ]","[l]","[ ]","[l]","[.]","[l]","[ ]"},
+        {"[ ]","[.]","[ ]","[.]","[ ]","[l]","[ ]","[l]"},
+        {"[l]","[ ]","[l]","[ ]","[l]","[ ]","[l]","[ ]"}
+    };
 
-    SetPiece(4,1,Alliance::LIGHT, false);
-    SetPiece(4,3,Alliance::LIGHT, false);
-    SetPiece(4,5,Alliance::LIGHT, false);
-    SetPiece(4,7,Alliance::LIGHT, false);
-    SetPiece(5,4,Alliance::LIGHT, false);
-    SetPiece(6,5,Alliance::LIGHT, false);
-    SetPiece(7,0,Alliance::LIGHT, false);
-    SetPiece(7,2,Alliance::LIGHT, false);
+    for(int y = 0; y < 8; ++y)
+    {
+        for(int x = 0; x < 8; ++x)
+        {
+            if(board_map[y][x] == "[d]")
+                SetPiece(y,x,Alliance::DARK, false);
+            else if(board_map[y][x] == "[D]")
+                SetPiece(y,x,Alliance::DARK, true);
+            else if(board_map[y][x] == "[l]")
+                SetPiece(y,x,Alliance::LIGHT, false);
+            else if(board_map[y][x] == "[L]")
+                SetPiece(y,x,Alliance::LIGHT, true);
+        }
+    }
 }
 
 std::shared_ptr<Position> BoardDraugths64::MakeCopy() const

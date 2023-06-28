@@ -158,8 +158,8 @@ void RulesCheckers::CalcAllJumps(const Position &position, const Piece &piece, M
                     }
                     else
                     {
-                        legalMoves.push_back(move);
                         CalcAllJumps(position, p, move, legalMoves);
+                        legalMoves.push_back(move);
                         move = oldMove;
                     }
                 }

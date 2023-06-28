@@ -249,9 +249,9 @@ void RulesFrisian::CalcAllJumps(const Position &position, const Piece &piece, Mo
                     Step step(startTile, current, target);
                     Move oldMove = move;
                     move.AddStep(step);
-                    legalMoves.push_back(move);
                     Piece p(current.GetRow(), current.GetCol(), piece.GetAlliance(), piece.IsKing());
                     CalcAllJumps(position, p, move, legalMoves);
+                    legalMoves.push_back(move);
                     move = oldMove;
                 }
             }

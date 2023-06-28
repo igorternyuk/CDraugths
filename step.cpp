@@ -50,7 +50,7 @@ bool Step::operator==(const Step &other) const
             return this->start.GetPiece() == other.start.GetPiece();
 
         if(!this->start.HasPiece() && !other.start.HasPiece())
-            return false;
+            return true;
     }
 
     return false;

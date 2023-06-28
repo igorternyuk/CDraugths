@@ -198,6 +198,12 @@ void View::DrawMenuBackgroud()
             DrawHelper::DrawFilledRect(tileSize * x, tileSize * y, tileSize, tileSize, {90,112,120});
         }
     }
+
+    DrawHelper::DrawPseudo3DPiece(1.5 * tileSize, 3.5 * tileSize + tileSize / 3, tileSize, 0.5 * tileSize, _colorLightPiece, _colorLightPiece2);
+    //DrawHelper::DrawPseudo3DPiece(1.5 * tileSize, 3.5 * tileSize - tileSize / 3, tileSize, 0.5 * tileSize, _colorLightPiece, _colorLightPiece2);
+    //DrawHelper::DrawPseudo3DPiece(3.5 * tileSize, 4 * tileSize + tileSize / 2, tileSize, 0.5 * tileSize, _colorDarkPiece, _colorDarkPiece2);
+    DrawHelper::DrawPseudo3DPiece(3.5 * tileSize, 4 * tileSize - tileSize / 2, tileSize, 0.5 * tileSize, _colorDarkPiece, _colorDarkPiece2);
+    //DrawHelper::DrawPseudo3DPiece(cx, cy, a_max, b_max, color, color2);
 }
 
 void View::OnKeyboardEvent(unsigned char key, int x, int y)
@@ -250,6 +256,11 @@ void View::OnKeyboardEvent(unsigned char key, int x, int y)
         width = GetDefaultWindowWidth();
         height = GetDefaultWindowHeight();
         bNeedToResizeWindow = true;
+    }
+    else if(key == ' ')
+    {
+        _bIsPseudo3DPieceStyle = !_bIsPseudo3DPieceStyle;
+        bNeedToResizeWindow = false;
     }
     if(bNeedToResizeWindow)
     {
@@ -503,10 +514,15 @@ void View::DrawPieces()
     auto bluePieces = board.GetPieces(Alliance::LIGHT);
 
     for(const auto& [i, p] : redPieces)
-        DrawPiece(*p, _colorDarkPiece, _colorDarkPiece2, pieceSizeRatio);
-
+        if(_bIsPseudo3DPieceStyle)
+            DrawPiece3(*p, _colorDarkPiece, _colorDarkPiece2, pieceSizeRatio);
+        else
+            DrawPiece(*p, _colorDarkPiece, _colorDarkPiece2, pieceSizeRatio);
     for(const auto& [i, p] : bluePieces)
-        DrawPiece(*p, _colorLightPiece, _colorLightPiece2, pieceSizeRatio);
+        if(_bIsPseudo3DPieceStyle)
+            DrawPiece3(*p, _colorLightPiece, _colorLightPiece2, pieceSizeRatio);
+        else
+            DrawPiece(*p, _colorLightPiece, _colorLightPiece2, pieceSizeRatio);
 }
 
 void View::DrawMoveStep(const Step &step, DrawHelper::Color color)
@@ -582,15 +598,43 @@ void View::DrawPiece(const Piece &piece, DrawHelper::Color color, DrawHelper::Co
     const int numStrips = 7;
     const float Rmax = pieceSizeRatio * TILE_SIZE_PX;
     const float Rmin = 0.05f * Rmax;
-    for(int i = 0; i < numStrips; ++i)
+    for(int i = 1; i < numStrips; ++i)
     {
         float t = (i - 1.0f) / (numStrips - 1.0f);
         float R = Rmax * (1.0f - t) + Rmin * t;
-        DrawHelper::DrawPolygon(cx, cy, R, 36, i % 2 == 0 ? color2 : color);
+        DrawHelper::DrawPolygon(cx, cy, R, 36, i % 2 != 0 ? color2 : color);
     }
 
     if(piece.IsKing())
         DrawCrown(piece, {255,255,0});
+}
+
+void View::DrawPiece3(const draughts::Piece &piece, DrawHelper::Color color, DrawHelper::Color color2, float pieceSizeRatio)
+{
+    const float xx = piece.GetCol();
+    const float yy = piece.GetRow();
+    int x, y;
+    if(_bRotateBoard)
+        FlippedCoordinates(xx, yy, x, y);
+    else
+    {
+        x = xx;
+        y = yy;
+    }
+    const float cx = x * TILE_SIZE_PX + TILE_SIZE_PX / 2;
+    const float cy = y * TILE_SIZE_PX + TILE_SIZE_PX / 2;
+    const float a_max = pieceSizeRatio * TILE_SIZE_PX;
+    const float b_max = 0.5 * a_max;
+
+    if(piece.IsKing())
+    {
+        DrawHelper::DrawPseudo3DPiece(cx, cy + TILE_SIZE_PX / 10, a_max, b_max, color, color2);
+        DrawHelper::DrawPseudo3DPiece(cx, cy - TILE_SIZE_PX / 10, a_max, b_max, color, color2);
+    }
+    else
+    {
+        DrawHelper::DrawPseudo3DPiece(cx, cy, a_max, b_max, color, color2);
+    }
 }
 
 void View::DrawCrown(const Piece &piece, DrawHelper::Color color)

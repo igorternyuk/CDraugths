@@ -157,8 +157,8 @@ void RulesInternational::CalcAllJumps(const Position &position, const Piece &pie
                         p.Crown();
                         move.SetCoronation(true);
                     }*/
-                    legalMoves.push_back(move);
                     CalcAllJumps(position, p, move, legalMoves);
+                    legalMoves.push_back(move);
                     move = oldMove;
                 }
             }

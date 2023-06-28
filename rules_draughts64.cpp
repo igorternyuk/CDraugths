@@ -13,6 +13,7 @@ void RulesDraughts64::CalcLegalMoves(const Position &position, Alliance alliance
 {
     const int BOARD_SIZE = position.GetBoardSize();
     moves.clear();
+    const int dy = DirectionOfAlliance(alliance);
 
     auto pieces = position.GetPieces(alliance);
     for(const auto& [i,p]: pieces)
@@ -27,8 +28,6 @@ void RulesDraughts64::CalcLegalMoves(const Position &position, Alliance alliance
             RemoveSubsets(moves);
         return;
     }
-
-    const int dy = DirectionOfAlliance(alliance);
 
     for(const auto& [i,p]: pieces)
     {
@@ -134,8 +133,8 @@ void RulesDraughts64::CalcAllJumps(const Position &position, const Piece &piece,
                         p.Crown();
                         move.SetCoronation(true);
                     }
-                    legalMoves.push_back(move);
                     CalcAllJumps(position, p, move, legalMoves);
+                    legalMoves.push_back(move);                    
                     move = oldMove;
                 }
             }

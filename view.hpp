@@ -55,6 +55,7 @@ namespace view
         void DrawMoveStep(const draughts::Step& step, DrawHelper::Color color);
         void DrawHumanPlayerSelection();
         void DrawPiece(const draughts::Piece& piece, DrawHelper::Color color, DrawHelper::Color color2, float pieceSizeRatio = 0.37f);
+        void DrawPiece3(const draughts::Piece& piece, DrawHelper::Color color, DrawHelper::Color color2, float pieceSizeRatio = 0.37f);
         void DrawCrown(const draughts::Piece& piece, DrawHelper::Color color);
         void DrawGameTypeMenu();
         void DrawGameModeMenu();
@@ -64,6 +65,7 @@ namespace view
         draughts::Game * _game;
         bool _bShowNotation = true;
         bool _bRotateBoard = false;
+        bool _bIsPseudo3DPieceStyle = true;
         ViewMode _viewMode = ViewMode::eMenuGameType;
         int _selectedGameType = (int)draughts::Game::Type::POLISH;
         int _selectedGameMode = (int)draughts::Game::Mode::HUMAN_CPU;
@@ -100,10 +102,10 @@ namespace view
         const DrawHelper::Color _colorTileDark = {93, 162, 45};
         //const DrawHelper::Color _colorRedPiece = {93, 162, 45};
         //const DrawHelper::Color _colorRedPiece2 = {0, 127, 0};
-        const DrawHelper::Color _colorDarkPiece = {180, 0, 0};
-        const DrawHelper::Color _colorDarkPiece2 = {79, 37, 29};
-        const DrawHelper::Color _colorLightPiece = {251,217,133};
-        const DrawHelper::Color _colorLightPiece2 = {197,159,80};
+        const DrawHelper::Color _colorDarkPiece2 = {180, 0, 0};
+        const DrawHelper::Color _colorDarkPiece = {79, 37, 29};
+        const DrawHelper::Color _colorLightPiece2 = {251,217,133};
+        const DrawHelper::Color _colorLightPiece = {197,159,80};
         //const DrawHelper::Color _colorLightPiece = {182,139,139};
 
         const DrawHelper::Color _colorSelection = {200,200,0};

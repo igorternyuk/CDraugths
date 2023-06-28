@@ -38,6 +38,9 @@ bool Rules::IsSubset(const Move &first, const Move &second) const
     const int stepCountFirst = first.StepCount();
     const int stepCountSecond = second.StepCount();
 
+    if(stepCountFirst == stepCountSecond)
+        return false;
+
     if(stepCountFirst < stepCountSecond)
     {
         const size_t min = stepCountFirst;
@@ -57,18 +60,14 @@ bool Rules::IsSubset(const Move &first, const Move &second) const
 
 void Rules::RemoveSubsets(std::vector<Move> &moves) const
 {
-    int k = 1;
+    std::sort(moves.begin(), moves.end(), [](const Move& move1, const Move& move2){
+        return move1.StepCount() < move2.StepCount();
+    });
     auto it = std::remove_if(moves.begin(), moves.end(), [&](auto &move)
     {
-        for(int i = k; i < moves.size(); ++i)
-        {
+        for(int i = 0; i < moves.size(); ++i)
             if(IsSubset(move, moves[i]))
-            {
-                ++k;
                 return true;
-            }
-        }
-        ++k;
         return false;
     });
 

@@ -2,6 +2,8 @@
 
 using namespace draughts;
 
+static constexpr int INF = 100000000;
+
 EuristicDefault::EuristicDefault()
 {
 
@@ -17,9 +19,9 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
     position.LegalMoves(Alliance::DARK, lightLegalMoves);
 
     if(lightLegalMoves.empty())
-        return -100000000;
+        return -INF;
     if(lightLegalMoves.empty())
-        return 100000000;
+        return INF;
 
     score += 10*lightLegalMoves.size();
     score -= 10*darkLegalMoves.size();
@@ -28,7 +30,61 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
 
     int num_dark_kings = 0;
     int num_light_kings = 0;
-    for(int y = 0; y < BOARD_SIZE; ++y)
+
+    const auto& piecesLight = position.GetPieces(Alliance::LIGHT);
+    const auto& piecesDark = position.GetPieces(Alliance::DARK);
+
+    for(const auto& [k, p]: piecesLight)
+    {
+        const Piece& piece = *p;
+        const int x = piece.GetCol();
+        const int y = piece.GetRow();
+        const int pieceValue = rules.GetPieceValue(piece);
+
+        if(piece.IsKing())
+            num_light_kings++;
+        score += pieceValue;
+        score += (BOARD_SIZE - y);
+        if(x == 0 || x == BOARD_SIZE)
+            score -= pieceValue / 2;
+
+        //retrasadas
+        if(x == 0 && y == BOARD_SIZE - 1)
+            score -= pieceValue / 2;
+        else if(x == BOARD_SIZE -1 && y == BOARD_SIZE - 2)
+            score -= pieceValue / 2;
+
+        //golden piece
+        if((x == BOARD_SIZE / 2 || x == BOARD_SIZE / 2 - 1) && y == BOARD_SIZE - 1)
+            score += 3 * pieceValue;
+    }
+
+    for(const auto& [k, p]: piecesDark)
+    {
+        const Piece& piece = *p;
+        const int x = piece.GetCol();
+        const int y = piece.GetRow();
+        const int pieceValue = rules.GetPieceValue(piece);
+
+        if(piece.IsKing())
+            num_dark_kings--;
+        score -= pieceValue;
+        score -= (y + 1);
+        if(x == 0 || x == BOARD_SIZE)
+            score += pieceValue / 2;
+
+        //retrasadas
+        if(x == BOARD_SIZE - 1 && y == 0)
+            score += pieceValue / 2;
+        else if(x == 0 && y == 1)
+            score += pieceValue / 2;
+
+        //golden piece
+        if((x == BOARD_SIZE / 2 || x == BOARD_SIZE / 2 - 1) && y == 0)
+            score -= 3 * pieceValue;
+    }
+
+    /*for(int y = 0; y < BOARD_SIZE; ++y)
     {
         for(int x = 0; x < BOARD_SIZE; ++x)
         {
@@ -78,7 +134,7 @@ int EuristicDefault::Evaluate(const Position &position, const Rules& rules)
                 }
             }
         }
-    }
+    }*/
 
     score += 10 * (num_light_kings - num_dark_kings);
     return score;
