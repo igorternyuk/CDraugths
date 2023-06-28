@@ -109,8 +109,8 @@ namespace view
         //const DrawHelper::Color _colorLightPiece = {182,139,139};
 
         const DrawHelper::Color _colorSelection = {200,200,0};
-        const DrawHelper::Color _colorMenuTitle1 = {0, 200, 0};
-        const DrawHelper::Color _colorMenuTitle2 = {22, 105, 35};
+        const DrawHelper::Color _colorMenuTitle1 = {0, 233, 0};
+        const DrawHelper::Color _colorMenuTitle2 = {134, 42, 219};
         //const DrawHelper::Color _colorMenuItem = {38, 144, 205};
         const DrawHelper::Color _colorMenuItem = {127, 0, 0};
         const DrawHelper::Color _colorMenuItemSelected = {255, 255, 0};

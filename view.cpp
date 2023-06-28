@@ -161,7 +161,7 @@ void View::DrawGameModeMenu()
     DrawMenuBackgroud();
     //glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameMode.size()) / 2;
-    DrawHelper::DrawWord24(_sMenuTitleGameMode.c_str(), titleLeftX, 20, 20, {0, 233, 0});
+    DrawHelper::DrawWord24(_sMenuTitleGameMode.c_str(), titleLeftX, 20, 20, _colorMenuTitle1);
 
     for(int i = 0; i < 2; ++i)
     {
@@ -175,7 +175,7 @@ void View::DrawLevelMenu()
     DrawMenuBackgroud();
     //glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleLevel.size()) / 2;
-    DrawHelper::DrawWord24(_sMenuTitleLevel.c_str(), titleLeftX, 20, 20, {0, 233, 0});
+    DrawHelper::DrawWord24(_sMenuTitleLevel.c_str(), titleLeftX, 20, 20, _colorMenuTitle1);
 
     for(int i = 0; i < 7; ++i)
     {

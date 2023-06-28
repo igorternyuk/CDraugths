@@ -21,8 +21,8 @@ BoardDraugths64::BoardDraugths64(): Board(std::make_shared<RulesDraughts64>(), B
 
 void BoardDraugths64::SetupInitialPosition()
 {
-    //Board::SetupInitialPosition();
-    SetupTestPosition();
+    Board::SetupInitialPosition();
+    //SetupTestPosition();
 }
 
 void BoardDraugths64::Reset()
