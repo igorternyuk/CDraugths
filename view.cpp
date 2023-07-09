@@ -326,8 +326,11 @@ void View::Update()
     _game->Update();
 }
 
+#define WINDOW_TITLE "CDraughts"
+
 void View::Render()
 {
+    glutSetWindowTitle("CDraughts");
     if(_viewMode == ViewMode::eMenuGameType)
     {
         DrawGameTypeMenu();
@@ -342,6 +345,11 @@ void View::Render()
     }
     else
     {
+        //Update the title according to the game type
+        Game::Type gameType = _game->GetType();
+        std::string title = std::string("CDraughts: ") + _menuItemsGameType[gameType];
+        glutSetWindowTitle(title.c_str());
+
         DrawBoard();
         DrawHumanPlayerSelection();
         DrawPieces();
