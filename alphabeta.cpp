@@ -52,7 +52,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
     auto totalMoveTime = 0u;
     int alpha = -INF;
     int beta = +INF;
-    int moveNumber = position->GetMoveLog().size();
+    int moveNumber = position->GetMoveLog().size() / 2 + 1;
 
     std::vector<std::pair<int, Move>> vBestMoves;
     if(player_alliance == Alliance::DARK)

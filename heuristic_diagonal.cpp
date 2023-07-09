@@ -16,14 +16,14 @@ int HeuristicDiagonal::Evaluate(const Position &position, const Rules& rules)
     std::vector<Move> lightLegalMoves;
     position.LegalMoves(Alliance::LIGHT, lightLegalMoves);
     std::vector<Move> darkLegalMoves;
-    position.LegalMoves(Alliance::DARK, lightLegalMoves);
+    position.LegalMoves(Alliance::DARK, darkLegalMoves);
 
     const std::vector<std::tuple<int,int>>& coronationTilesLight = position.GetCoronationTiles(Alliance::LIGHT);
     const std::vector<std::tuple<int,int>>& coronationTilesDark = position.GetCoronationTiles(Alliance::DARK);
 
     if(lightLegalMoves.empty())
         return -INF;
-    if(lightLegalMoves.empty())
+    if(darkLegalMoves.empty())
         return INF;
 
     score += 10*lightLegalMoves.size();
@@ -75,7 +75,7 @@ int HeuristicDiagonal::Evaluate(const Position &position, const Rules& rules)
             num_dark_kings--;
         score -= pieceValue;
         const Tile& currTile = position.GetTile(py, px);
-        for(const auto& loc: coronationTilesLight)
+        for(const auto& loc: coronationTilesDark)
         {
             int r, c;
             std::tie(r,c) = loc;

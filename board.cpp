@@ -59,8 +59,8 @@ void Board::Reset()
 {
     _mapOfPieces.clear();
     _moveLog.clear();
-    _bValidLegalMoves = false;
-    _legalMoves.clear();
+    //_bValidLegalMoves = false;
+    //_legalMoves.clear();
     _bValidHash = false;
     _hash = 0;
     _bGameStatusChanged = true;
@@ -337,7 +337,7 @@ bool Board::MakeMove(const Move& move)
     }
 
     _moveLog.push_back(move);
-    _bValidLegalMoves = false;
+    //_bValidLegalMoves = false;
     _bValidHash = false;
     _bGameStatusChanged = true;
     return true;
@@ -383,7 +383,7 @@ bool Board::UndoLastMove()
 
     _moveLog.pop_back();
     _moveLog.shrink_to_fit();
-    _bValidLegalMoves = false;
+    //_bValidLegalMoves = false;
     _bValidHash = false;
     _bGameStatusChanged = true;
     return true;
@@ -443,17 +443,17 @@ int Board::GetTotalPieces() const
 
 void Board::LegalMoves(Alliance alliance, std::vector<Move> &moves) const
 {
-    if(!_bValidLegalMoves && _rules)
+    //if(!_bValidLegalMoves && _rules)
     {
         _rules->CalcLegalMoves(*this, alliance, moves);
-        _legalMoves.clear();
-        std::copy(moves.begin(), moves.end(), std::back_inserter(_legalMoves));
-        _bValidLegalMoves = true;
+        //_legalMoves.clear();
+        //std::copy(moves.begin(), moves.end(), std::back_inserter(_legalMoves));
+        //_bValidLegalMoves = true;
     }
-    else
+    /*else
     {
         std::copy(_legalMoves.begin(), _legalMoves.end(), std::back_inserter(moves));
-    }
+    }*/
 }
 
 bool Board::HasAvailableTile(int row, int col) const
