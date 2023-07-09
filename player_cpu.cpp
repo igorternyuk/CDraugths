@@ -1,9 +1,9 @@
-#include "player_cpu.hpp"
+#include "player_cpu.h"
 
 using namespace draughts;
 
 PlayerCPU::PlayerCPU(Alliance alliance, std::shared_ptr<MoveStrategy> strategy):
-    Player(alliance), _moveStrategy(strategy)
+        Player(alliance), _moveStrategy(strategy)
 {
 
 }

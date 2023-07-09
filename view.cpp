@@ -1,5 +1,5 @@
-#include "view.hpp"
-#include "player_human.hpp"
+#include "view.h"
+#include "player_human.h"
 #include <GL/freeglut.h>
 #include <iostream>
 
@@ -16,9 +16,10 @@ View::View():_game(Game::GetInstance())
 void View::FlippedCoordinates(int x, int y, int &fx, int &fy)
 {
     const Board& board = _game->GetBoard();
-    const int boardSize = board.GetBoardSize();
-    fx = boardSize - 1 - x;
-    fy = boardSize - 1 - y;
+    const int W = board.GetBoardWidth();
+    const int H = board.GetBoardHeight();
+    fx = W - 1 - x;
+    fy = H - 1 - y;
 }
 
 void View::FlipBoard()
@@ -102,7 +103,7 @@ void View::OnMouseEvent(int button, int state, int x, int y)
             if(button == GLUT_LEFT_BUTTON)
             {
                 _viewMode = ViewMode::eBoard;
-                 int depth = _game->MapLevelToSearchDepth(static_cast<Game::Level>(_selectedLevel));
+                int depth = _game->MapLevelToSearchDepth(static_cast<Game::Level>(_selectedLevel));
                 _game->SetupNewGame((Game::Type)_selectedGameType, (Game::Mode)_selectedGameMode, depth);
 
                 const int width = GetWindowWidth();
@@ -127,23 +128,23 @@ void View::OnMouseMotion(int x, int y)
     }
     else if(_viewMode == ViewMode::eMenuGameMode)
     {
-         _selectedGameMode = std::max(0, std::min(1, ((y - 60) / 20)));
-         if(_selectedGameMode == (int)draughts::Game::Mode::CPU_HUMAN)
-             _bRotateBoard = true;
-         else
-             _bRotateBoard = false;
+        _selectedGameMode = std::max(0, std::min(1, ((y - 60) / 20)));
+        if(_selectedGameMode == (int)draughts::Game::Mode::CPU_HUMAN)
+            _bRotateBoard = true;
+        else
+            _bRotateBoard = false;
 
     }
     else if(_viewMode == ViewMode::eMenuLevel)
     {
-         _selectedLevel = std::max(0, std::min(6, ((y - 60 + 18) / (18 + 18/2))));
+        _selectedLevel = std::max(0, std::min(6, ((y - 60 + 18) / (18 + 18/2))));
     }
 }
 
 void View::DrawGameTypeMenu()
 {
-    DrawMenuBackgroud();
-   // glClearColor(0,0,0,0);
+    drawMenuBackground();
+    // glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameType.size()) / 2;
     DrawHelper::DrawWord24(_sMenuTitleGameType.c_str(), titleLeftX, 40, 20, _colorMenuTitle1);
     int titleLeftX2 = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameType2.size()) / 2;
@@ -158,7 +159,7 @@ void View::DrawGameTypeMenu()
 
 void View::DrawGameModeMenu()
 {
-    DrawMenuBackgroud();
+    drawMenuBackground();
     //glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleGameMode.size()) / 2;
     DrawHelper::DrawWord24(_sMenuTitleGameMode.c_str(), titleLeftX, 20, 20, _colorMenuTitle1);
@@ -172,7 +173,7 @@ void View::DrawGameModeMenu()
 
 void View::DrawLevelMenu()
 {
-    DrawMenuBackgroud();
+    drawMenuBackground();
     //glClearColor(0,0,0,0);
     int titleLeftX = (GetDefaultWindowWidth() - 20 * _sMenuTitleLevel.size()) / 2;
     DrawHelper::DrawWord24(_sMenuTitleLevel.c_str(), titleLeftX, 20, 20, _colorMenuTitle1);
@@ -184,25 +185,25 @@ void View::DrawLevelMenu()
     }
 }
 
-void View::DrawMenuBackgroud()
+void View::drawMenuBackground()
 {
-    int boardSize = 5;
-    float w = GetDefaultWindowWidth();
-    const int tileSize = w / boardSize;
+    int boardSize = 6;
+    float h = GetDefaultWindowHeight();
+    const int tileSize = h / boardSize;
     DrawHelper::DrawFilledRect(0, 0, tileSize * boardSize, tileSize * boardSize, {130,130,130});
 
     for(int y = 0; y < boardSize; ++y)
     {
-        for(int x = (y + 1) % 2; x < boardSize; x += 2)
+        for(int x = (y + 1) % 2; x < boardSize - 1; x += 2)
         {
             DrawHelper::DrawFilledRect(tileSize * x, tileSize * y, tileSize, tileSize, {90,112,120});
         }
     }
 
-    DrawHelper::DrawPseudo3DPiece(1.5 * tileSize, 3.5 * tileSize + tileSize / 3, tileSize, 0.5 * tileSize, _colorLightPiece, _colorLightPiece2);
+    DrawHelper::DrawPseudo3DPiece(1.5 * tileSize, 4.5 * tileSize + tileSize / 3, tileSize, 0.5 * tileSize, _colorLightPiece, _colorLightPiece2);
     //DrawHelper::DrawPseudo3DPiece(1.5 * tileSize, 3.5 * tileSize - tileSize / 3, tileSize, 0.5 * tileSize, _colorLightPiece, _colorLightPiece2);
     //DrawHelper::DrawPseudo3DPiece(3.5 * tileSize, 4 * tileSize + tileSize / 2, tileSize, 0.5 * tileSize, _colorDarkPiece, _colorDarkPiece2);
-    DrawHelper::DrawPseudo3DPiece(3.5 * tileSize, 4 * tileSize - tileSize / 2, tileSize, 0.5 * tileSize, _colorDarkPiece, _colorDarkPiece2);
+    DrawHelper::DrawPseudo3DPiece(3.5 * tileSize, 5.0 * tileSize - tileSize / 2, tileSize, 0.5 * tileSize, _colorDarkPiece, _colorDarkPiece2);
     //DrawHelper::DrawPseudo3DPiece(cx, cy, a_max, b_max, color, color2);
 }
 
@@ -362,8 +363,8 @@ int View::GetWindowWidth()
     View* view = View::GetInstance();
     Game* game = view->GetGame();
     const Board& board = game->GetBoard();
-    int sz = board.GetBoardSize();
-    return sz * TILE_SIZE_PX;
+    int W = board.GetBoardWidth();
+    return W * TILE_SIZE_PX;
 }
 
 int View::GetWindowHeight()
@@ -371,8 +372,8 @@ int View::GetWindowHeight()
     View* view = View::GetInstance();
     Game* game = view->GetGame();
     const Board& board = game->GetBoard();
-    int sz = board.GetBoardSize();
-    return sz * TILE_SIZE_PX;
+    int H = board.GetBoardHeight();
+    return H * TILE_SIZE_PX;
 }
 
 int View::GetDefaultWindowWidth()
@@ -392,7 +393,7 @@ void View::HighlightLastMove()
     DrawHelper::Color color = {211,204,0};
     for(int i = 0; i < stepCount; ++i)
     {
-         const Step& step = lastMove.GetStep(i);
+        const Step& step = lastMove.GetStep(i);
         DrawMoveStep(step, color);
     }
 }
@@ -446,17 +447,21 @@ void View::DrawGameStatus()
 
 void View::DrawBoard()
 {
+
+    Game::Type gameType = GetGame()->GetType();
+    bool bIsDiagonalDraughts = gameType == Game::Type::DIAGONAL64 || gameType == Game::Type::DIAGONAL100;
     int topLeftX = 0;
     int topLeftY = 0;
 
     Game* game = Game::GetInstance();
     Board& board = game->GetBoard();
-    const int boardSize = board.GetBoardSize();
-    DrawHelper::DrawFilledRect(topLeftX, topLeftY, TILE_SIZE_PX * boardSize, TILE_SIZE_PX * boardSize, _colorTileLight);
+    const int H = board.GetBoardHeight();
+    const int W = board.GetBoardWidth();
+    DrawHelper::DrawFilledRect(topLeftX, topLeftY, TILE_SIZE_PX * W, TILE_SIZE_PX * H, _colorTileLight);
 
-    for(int yy = 0; yy < boardSize; ++yy)
+    for(int yy = 0; yy < H; ++yy)
     {
-        for(int xx = 0; xx < boardSize; ++xx)
+        for(int xx = 0; xx < W; ++xx)
         {
             int x, y;
             if(_bRotateBoard)
@@ -469,7 +474,9 @@ void View::DrawBoard()
             const Tile& tile = board.GetTile(yy, xx);
             if(tile.IsDark())
             {
-                DrawHelper::DrawFilledRect(topLeftX + x * TILE_SIZE_PX, topLeftY + y * TILE_SIZE_PX, TILE_SIZE_PX, TILE_SIZE_PX, _colorTileDark);
+                bool bIsCoronationTile = board.IsCoronationTile(yy,xx,Alliance::LIGHT) || board.IsCoronationTile(yy,xx,Alliance::DARK);
+                DrawHelper::DrawFilledRect(topLeftX + x * TILE_SIZE_PX, topLeftY + y * TILE_SIZE_PX, TILE_SIZE_PX, TILE_SIZE_PX,
+                                           bIsDiagonalDraughts && bIsCoronationTile ? _colorTileCoronation : _colorTileDark);
             }
             //Draw notation
 
@@ -485,7 +492,7 @@ void View::DrawBoard()
                         const char* rank = sRank.c_str();
                         DrawHelper::DrawWord24(rank, topLeftX + x * TILE_SIZE_PX, topLeftY + y * TILE_SIZE_PX + TILE_SIZE_PX * 3 / 5, 10, _colorNotation);
                     }
-                    if(y == boardSize - 1)
+                    if(y == H - 1)
                     {
                         std::string sFile = sNotation.substr(0, 1);
                         const char* file = sFile.c_str();

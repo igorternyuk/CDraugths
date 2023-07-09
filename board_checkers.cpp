@@ -1,12 +1,13 @@
-#include "board_checkers.hpp"
-#include "rules_checkers.hpp"
+#include "board_checkers.h"
+#include "rules_checkers.h"
 #include <iostream>
 
 using namespace draughts;
 
+static std::map<int, std::string> _mapNotation = draughts::FillNotationMap(BoardCheckers::BOARD_SIZE,BoardCheckers::BOARD_SIZE, true, false);
+
 BoardCheckers::BoardCheckers():Board(std::make_shared<RulesCheckers>(), BOARD_SIZE)
 {
-    int k = 0;
     for(int r = 0; r < BOARD_SIZE; ++r)
         for(int c = 0; c < BOARD_SIZE; ++c)
         {
@@ -14,9 +15,6 @@ BoardCheckers::BoardCheckers():Board(std::make_shared<RulesCheckers>(), BOARD_SI
             {
                 Tile& tile = GetTile(r, c);
                 tile.SetDark();
-                ++k;
-                int index = IndexByCoords(r, c);
-                _mapNotation[index] = std::to_string(k);
             }
         }
 }
@@ -29,11 +27,6 @@ std::shared_ptr<Position> BoardCheckers::MakeCopy() const
 void BoardCheckers::SetupInitialPosition()
 {
     Board::SetupInitialPosition();
-}
-
-int BoardCheckers::GetBoardSize() const
-{
-    return BOARD_SIZE;
 }
 
 int BoardCheckers::GetPieceRows() const

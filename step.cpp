@@ -1,26 +1,26 @@
-#include "step.hpp"
+#include "step.h"
 
 using namespace draughts;
 
 const Tile &Step::GetStart() const
 {
-    return start;
+    return _start;
 }
 
-void Step::SetStart(const Tile &newStart)
+/*void Step::SetStart(const Tile &newStart)
 {
-    start = newStart;
-}
+    _start = newStart;
+}*/
 
 const Tile &Step::GetEnd() const
 {
-    return end;
+    return _end;
 }
 
-void Step::SetEnd(const Tile &newEnd)
+/*void Step::SetEnd(const Tile &newEnd)
 {
-    end = newEnd;
-}
+    _end = newEnd;
+}*/
 
 const Piece &Step::GetCaptured() const
 {
@@ -32,8 +32,8 @@ void Step::SetCaptured(const Piece &newCaptured)
     captured = newCaptured;
 }
 
-Step::Step(Tile start, Tile end, Piece captured):
-    start(start), end(end), captured(captured)
+Step::Step(const Tile& start, const Tile& end, Piece captured):
+        _start(start), _end(end), captured(captured)
 {}
 
 bool Step::isJump() const
@@ -43,13 +43,13 @@ bool Step::isJump() const
 
 bool Step::operator==(const Step &other) const
 {
-    if(this->start == other.start && this->end == other.end
-            && this->captured == other.captured)
+    if(this->_start == other._start && this->_end == other._end
+       && this->captured == other.captured)
     {
-        if(this->start.HasPiece() && other.start.HasPiece())
-            return this->start.GetPiece() == other.start.GetPiece();
+        if(this->_start.HasPiece() && other._start.HasPiece())
+            return this->_start.GetPiece() == other._start.GetPiece();
 
-        if(!this->start.HasPiece() && !other.start.HasPiece())
+        if(!this->_start.HasPiece() && !other._start.HasPiece())
             return true;
     }
 
@@ -59,4 +59,12 @@ bool Step::operator==(const Step &other) const
 bool Step::operator!=(const Step &other) const
 {
     return !(*this == other);
+}
+
+Tile &Step::GetStart() {
+    return _start;
+}
+
+Tile &Step::GetEnd() {
+    return _end;
 }

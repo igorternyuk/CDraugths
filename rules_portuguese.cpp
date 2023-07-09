@@ -1,4 +1,4 @@
-#include "rules_portuguese.hpp"
+#include "rules_portuguese.h"
 #include <algorithm>
 
 using namespace draughts;
@@ -13,6 +13,30 @@ Alliance RulesPortuguese::FirstMoveAlliance() const
     return Alliance::LIGHT;
 }
 
+void RulesPortuguese::PossibleDirections(const Piece &piece, bool isJump, std::vector<int> &dirs) const
+{
+    if(piece.IsKing())
+    {
+        dirs.push_back(eRIGHT_UP);
+        dirs.push_back(eLEFT_UP);
+        dirs.push_back(eRIGHT_DOWN);
+        dirs.push_back(eLEFT_DOWN);
+    }
+    else
+    {
+        if(piece.GetAlliance() == Alliance::LIGHT)
+        {
+            dirs.push_back(eRIGHT_UP);
+            dirs.push_back(eLEFT_UP);
+        }
+        else if(piece.GetAlliance() == Alliance::DARK)
+        {
+            dirs.push_back(eRIGHT_DOWN);
+            dirs.push_back(eLEFT_DOWN);
+        }
+    }
+}
+
 int RulesPortuguese::GetPieceValue(const Piece &piece) const
 {
     return piece.IsKing() ? KING_VALUE * 2 / 3 : PIECE_VALUE;
@@ -22,7 +46,7 @@ void RulesPortuguese::CalcLegalMoves(const Position &position, Alliance alliance
 {
     moves.clear();
 
-    const int BOARD_SIZE =position.GetBoardSize();
+    const int BOARD_SIZE = position.GetBoardSize();
 
     auto pieces = position.GetPieces(alliance);
     for(const auto& [i,p]: pieces)
@@ -76,41 +100,25 @@ void RulesPortuguese::CalcLegalMoves(const Position &position, Alliance alliance
         return;
     }
 
-    const int dy = DirectionOfAlliance(alliance);
-
     for(const auto& [i,p]: pieces)
     {
         const Piece& piece = *p;
+
+        std::vector<int> dirs;
+        PossibleDirections(piece, false, dirs);
+
         const int x = piece.GetCol();
         const int y = piece.GetRow();
         const Tile& currTile = position.GetTile(y, x);
-        int N = piece.IsKing() ? BOARD_SIZE - 1 : 2;
-        if(piece.IsKing())
+        const int N = piece.IsKing() ? BOARD_SIZE - 1 : 1;
+        for(const auto& dir: dirs)
         {
-            for(int dir = 0; dir < 4; ++dir)
+            for(int n = 1; n <= N; ++n)
             {
-                for(int n = 1; n <= N; ++n)
-                {
-                    int nx = x + n * _offsetX[dir];
-                    int ny = y + n * _offsetY[dir];
-                    const Tile& tile = position.GetTile(ny, nx);
-                    if(!tile.IsValid() || !tile.IsEmpty())
-                        break;
-                    Move move;
-                    Step step(currTile, tile);
-                    move.AddStep(step);
-                    moves.push_back(move);
-                }
-            }
-        }
-        else
-        {
-            int nx = 0, ny = 0;
-
-            for(int dx = -1; dx <= +1; dx += 2)
-            {
-                nx = x + dx;
-                ny = y + dy;
+                int dx = n * _offsetX[dir];
+                int dy = n * _offsetY[dir];
+                int nx = x + dx;
+                int ny = y + dy;
                 const Tile& tile = position.GetTile(ny, nx);
                 bool bIsTileValid = tile.IsValid();
                 if(bIsTileValid && tile.IsEmpty())
@@ -118,7 +126,7 @@ void RulesPortuguese::CalcLegalMoves(const Position &position, Alliance alliance
                     Move move;
                     Step step(currTile, tile);
                     move.AddStep(step);
-                    if(CheckIfCoronate(position, move))
+                    if(!piece.IsKing() && CheckIfCoronate(position, move))
                         move.SetCoronation(true);
                     moves.push_back(move);
                 }
@@ -133,21 +141,11 @@ void RulesPortuguese::CalcAllJumps(const Position &position, const Piece &piece,
     int px = piece.GetCol();
     int py = piece.GetRow();
     Tile startTile = position.GetTile(py, px);
-    Alliance alliance = piece.GetAlliance();
     int N = piece.IsKing() ? BOARD_SIZE - 1 : 2;
-    std::vector<int> indices;
-    if(alliance == Alliance::DARK || piece.IsKing())
-    {
-        indices.push_back(eRIGHT_DOWN);
-        indices.push_back(eLEFT_DOWN);
-    }
-    if(alliance == Alliance::LIGHT || piece.IsKing())
-    {
-        indices.push_back(eRIGHT_UP);
-        indices.push_back(eLEFT_UP);
-    }
+    std::vector<int> dirs;
+    PossibleDirections(piece, true, dirs);
 
-    for(auto& dir: indices)
+    for(auto& dir: dirs)
     {
         bool targetDetected = false;
         Tile current = position.GetTile(py, px);
@@ -185,7 +183,7 @@ void RulesPortuguese::CalcAllJumps(const Position &position, const Piece &piece,
                     Move oldMove = move;
                     move.AddStep(step);
                     Piece p(current.GetRow(), current.GetCol(), piece.GetAlliance(), piece.IsKing());
-                    if(CheckIfCoronate(position, move))
+                    if(!p.IsKing() && CheckIfCoronate(position, move))
                     {
                         p.Crown();
                         move.SetCoronation(true);

@@ -1,21 +1,17 @@
-#include "board_brazilian.hpp"
+#include "board_brazilian.h"
 
 using namespace draughts;
 
 
 BoardBrazilian::BoardBrazilian():BoardInternational(BOARD_SIZE)
 {
-    //int k = 0;
-    for(int r = 0; r < BOARD_SIZE; ++r)
-        for(int c = 0; c < BOARD_SIZE; ++c)
+    for(int r = 0; r < BOARD_HEIGHT; ++r)
+        for(int c = 0; c < BOARD_WIDTH; ++c)
         {
             if((c + r) % 2 != 0)
             {
                 Tile& tile = GetTile(r, c);
                 tile.SetDark();
-                //++k;
-                //int index = IndexByCoords(r, c);
-               // _mapNotation[index] = std::to_string(k);
             }
         }
     BoardInternational::SetupInitialPosition();
@@ -24,11 +20,6 @@ BoardBrazilian::BoardBrazilian():BoardInternational(BOARD_SIZE)
 std::shared_ptr<Position> BoardBrazilian::MakeCopy() const
 {
     return std::make_shared<BoardBrazilian>(*this);
-}
-
-int BoardBrazilian::GetBoardSize() const
-{
-    return BOARD_SIZE;
 }
 
 int BoardBrazilian::GetPieceRows() const

@@ -1,13 +1,14 @@
-#include "board_portuguese.hpp"
-#include "rules_portuguese.hpp"
+#include "board_portuguese.h"
+#include "rules_portuguese.h"
 #include <algorithm>
 #include <iostream>
 
 using namespace draughts;
 
+static std::map<int, std::string> _mapNotation = FillNotationMap(BoardPortuguese::BOARD_SIZE,BoardPortuguese::BOARD_SIZE, false, true);
+
 BoardPortuguese::BoardPortuguese():Board(std::make_shared<RulesPortuguese>(), BOARD_SIZE)
 {
-    int k = BOARD_SIZE * BOARD_SIZE / 2;
     for(int r = 0; r < BOARD_SIZE; ++r)
         for(int c = 0; c < BOARD_SIZE; ++c)
         {
@@ -15,12 +16,9 @@ BoardPortuguese::BoardPortuguese():Board(std::make_shared<RulesPortuguese>(), BO
             {
                 Tile& tile = GetTile(r, c);
                 tile.SetDark();
-                int index = IndexByCoords(r, c);
-                _mapNotation[index] = std::to_string(k--);
             }
         }
 }
-
 
 std::shared_ptr<Position> BoardPortuguese::MakeCopy() const
 {
@@ -29,23 +27,19 @@ std::shared_ptr<Position> BoardPortuguese::MakeCopy() const
 
 void BoardPortuguese::SetupInitialPosition()
 {
-    const int BOARD_SIZE = GetBoardSize();
+    const int W = GetBoardWidth();
+    const int H = GetBoardHeight();
     const int NUM_PIECES_FOR_ROW = GetPieceRows();
     Reset();
     Clear();
     for(int y = 0; y < NUM_PIECES_FOR_ROW; ++y)
-        for(int x = y % 2; x < BOARD_SIZE; x += 2)
+        for(int x = y % 2; x < W; x += 2)
             SetPiece(y,x,Alliance::DARK);
 
 
-    for(int y = BOARD_SIZE - NUM_PIECES_FOR_ROW; y < BOARD_SIZE; ++y)
-        for(int x = y % 2; x < BOARD_SIZE; x += 2)
+    for(int y = H - NUM_PIECES_FOR_ROW; y < H; ++y)
+        for(int x = y % 2; x < W; x += 2)
             SetPiece(y,x,Alliance::LIGHT);
-}
-
-int BoardPortuguese::GetBoardSize() const
-{
-    return BOARD_SIZE;
 }
 
 int BoardPortuguese::GetPieceRows() const
@@ -111,8 +105,8 @@ bool BoardPortuguese::MakeMove(const Move &move)
         int aCount[4];
         CalcPieceCount(aCount);
 
-        if((aCount[RED_PIECE] == 0 && aCount[RED_KING]  == 3 && aCount[BLUE_KING] == 1)
-                || (aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING]  == 3 && aCount[RED_KING] == 1))
+        if((aCount[DARK_PIECE] == 0 && aCount[DARK_KING] == 3 && aCount[LIGHT_KING] == 1)
+           || (aCount[LIGHT_PIECE] == 0 && aCount[LIGHT_KING] == 3 && aCount[DARK_KING] == 1))
         {
             if(_mapDrawRep.at(COUNT_12).first == 0)
             {

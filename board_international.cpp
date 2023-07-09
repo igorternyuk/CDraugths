@@ -1,10 +1,13 @@
-#include "board_international.hpp"
-#include "rules_international.hpp"
+#include "board_international.h"
+#include "rules_international.h"
 #include <iostream>
 
 using namespace draughts;
 
-BoardInternational::BoardInternational(int N): Board(std::make_shared<RulesInternational>(), N)
+
+
+
+BoardInternational::BoardInternational(size_t N): Board(std::make_shared<RulesInternational>(), N)
 {
 
 }
@@ -17,14 +20,14 @@ bool BoardInternational::MakeMove(const Move &move)
         _hash = GetHash();
         const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
         if(piece.GetAlliance() == Alliance::DARK)
-            _mapRepBlue[_hash]++;
+            _mapRepLight[_hash]++;
         else if(piece.GetAlliance() == Alliance::LIGHT)
-            _mapRepRed[_hash]++;
+            _mapRepDark[_hash]++;
         int aCount[4];
         CalcPieceCount(aCount);
 
-        int reds_total = aCount[RED_PIECE] + aCount[RED_KING] ;
-        int blues_total = aCount[BLUE_PIECE] + aCount[BLUE_KING];
+        int reds_total = aCount[DARK_PIECE] + aCount[DARK_KING] ;
+        int blues_total = aCount[LIGHT_PIECE] + aCount[LIGHT_KING];
         int total = reds_total + blues_total;
 
         if(piece.IsKing() && !move.IsJump())
@@ -34,8 +37,8 @@ bool BoardInternational::MakeMove(const Move &move)
 
         _mapDrawRep[COUNT_25].second = true;
 
-        if((reds_total == 3 && aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING] == 1)
-                || (blues_total == 3 && aCount[RED_PIECE] == 0 && aCount[RED_KING] == 1))
+        if((reds_total == 3 && aCount[LIGHT_PIECE] == 0 && aCount[LIGHT_KING] == 1)
+           || (blues_total == 3 && aCount[DARK_PIECE] == 0 && aCount[DARK_KING] == 1))
         {
             ++_mapDrawRep[COUNT_16].first;
             _mapDrawRep[COUNT_16].second = true;
@@ -68,15 +71,15 @@ bool BoardInternational::UndoLastMove()
     {
         const Move& moveLast = GetMoveLog().back();
         const Piece& piece = moveLast.GetFirstStep().GetStart().GetPiece();
-        if(!_mapRepBlue.empty() && _mapRepBlue.find(_hash) != _mapRepBlue.end() )
+        if(!_mapRepLight.empty() && _mapRepLight.find(_hash) != _mapRepLight.end() )
         {
             if(piece.GetAlliance() == Alliance::DARK)
-                _mapRepBlue[_hash]--;
+                _mapRepLight[_hash]--;
         }
-        if(!_mapRepRed.empty() && _mapRepRed.find(_hash) != _mapRepRed.end() )
+        if(!_mapRepDark.empty() && _mapRepDark.find(_hash) != _mapRepDark.end() )
         {
             if(piece.GetAlliance() == Alliance::LIGHT)
-                _mapRepRed[_hash]--;
+                _mapRepDark[_hash]--;
         }
 
         if(Board::UndoLastMove())
@@ -94,34 +97,21 @@ bool BoardInternational::UndoLastMove()
     return false;
 }
 
-std::string BoardInternational::TileToNotation(const Tile &tile) const
-{
-    const int row = tile.GetRow();
-    const int col = tile.GetCol();
-    if(IsValidCoords(row, col))
-    {
-        const int index = IndexByCoords(row, col);
-        if(_mapNotation.find(index) != _mapNotation.end())
-            return _mapNotation.at(index);
-    }
-    return std::string("");
-}
-
 GameStatus BoardInternational::GetGameStatus() const
 {
-    if(!_mapRepBlue.empty() && _mapRepBlue.find(_hash) != _mapRepBlue.end() )
+    if(!_mapRepLight.empty() && _mapRepLight.find(_hash) != _mapRepLight.end() )
     {
-        if(_mapRepBlue.at(_hash) >= 3)
+        if(_mapRepLight.at(_hash) >= 3)
         {
-           // if(_log)
-           //     std::cout << "Draw by threefold repetition!\n";
+            // if(_log)
+            //     std::cout << "Draw by threefold repetition!\n";
             return GameStatus::DRAW;
         }
     }
 
-    if(!_mapRepRed.empty() && _mapRepRed.find(_hash) != _mapRepRed.end() )
+    if(!_mapRepDark.empty() && _mapRepDark.find(_hash) != _mapRepDark.end() )
     {
-        if(_mapRepRed.at(_hash) >= 3)
+        if(_mapRepDark.at(_hash) >= 3)
         {
             //if(_log)
             //    std::cout << "Draw by threefold repetition!\n";
@@ -164,8 +154,8 @@ void BoardInternational::Reset()
         p.first = 0;
         p.second = false;
     }
-    _mapRepBlue.clear();
-    _mapRepRed.clear();
+    _mapRepLight.clear();
+    _mapRepDark.clear();
 }
 
 void BoardInternational::SetupTestPosition()
@@ -180,4 +170,21 @@ void BoardInternational::SetupTestPosition()
     SetPiece(5,4,Alliance::LIGHT, false);
     SetPiece(6,5,Alliance::LIGHT, false);
     SetPiece(8,5,Alliance::LIGHT, false);
+}
+
+void BoardInternational::SetupBoard()
+{
+    const size_t HEIGHT = GetBoardHeight();
+    const size_t WIDTH = GetBoardWidth();
+    int k = 0;
+    for(size_t r = 0; r < HEIGHT; ++r)
+        for(size_t c = 0; c < WIDTH; ++c)
+        {
+            if((c + r) % 2 != 0)
+            {
+                Tile& tile = GetTile(r, c);
+                tile.SetDark();
+                ++k;
+            }
+        }
 }

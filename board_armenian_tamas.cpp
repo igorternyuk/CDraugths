@@ -1,10 +1,9 @@
-#include "board_turkish.h"
-#include "rules_turkish.h"
+#include "board_armenian_tamas.h"
+#include "rules_armenian.h"
 #include <iostream>
-
 using namespace draughts;
 
-BoardTurkish::BoardTurkish(): Board(std::make_shared<RulesTurkish>(), BOARD_SIZE)
+BoardArmenianTamas::BoardArmenianTamas(): Board(std::make_shared<RulesArmenian>(), BOARD_SIZE)
 {
     for(int r = 0; r < BOARD_SIZE; ++r)
         for(int c = 0; c < BOARD_SIZE; ++c)
@@ -17,10 +16,10 @@ BoardTurkish::BoardTurkish(): Board(std::make_shared<RulesTurkish>(), BOARD_SIZE
         }
 }
 
-void draughts::BoardTurkish::SetupInitialPosition()
+void BoardArmenianTamas::SetupInitialPosition()
 {
-    const int W = GetBoardWidth();
     const int H = GetBoardHeight();
+    const int W = GetBoardWidth();
     const int NUM_PIECES_FOR_ROW = GetPieceRows();
     Reset();
     Clear();
@@ -33,22 +32,22 @@ void draughts::BoardTurkish::SetupInitialPosition()
             SetPiece(y,x,Alliance::LIGHT);
 }
 
-std::shared_ptr<draughts::Position> draughts::BoardTurkish::MakeCopy() const
+std::shared_ptr<draughts::Position> draughts::BoardArmenianTamas::MakeCopy() const
 {
-    return std::make_shared<BoardTurkish>(*this);
+    return std::make_shared<BoardArmenianTamas>(*this);
 }
 
-int draughts::BoardTurkish::GetPieceRows() const
+int BoardArmenianTamas::GetPieceRows() const
 {
     return NUM_PIECE_ROWS;
 }
 
-Notation draughts::BoardTurkish::GetNotation() const
+Notation BoardArmenianTamas::GetNotation() const
 {
     return Notation::ALGEBRAIC;
 }
 
-bool draughts::BoardTurkish::MakeMove(const Move &move)
+bool BoardArmenianTamas::MakeMove(const Move &move)
 {
     if(Board::MakeMove(move))
     {
@@ -70,7 +69,7 @@ bool draughts::BoardTurkish::MakeMove(const Move &move)
     return false;
 }
 
-bool draughts::BoardTurkish::UndoLastMove()
+bool BoardArmenianTamas::UndoLastMove()
 {
     if(Board::UndoLastMove())
     {
@@ -86,7 +85,14 @@ bool draughts::BoardTurkish::UndoLastMove()
     return false;
 }
 
-draughts::GameStatus draughts::BoardTurkish::GetGameStatus() const
+std::string BoardArmenianTamas::TileToNotation(const Tile &tile) const
+{
+    int row = tile.GetRow();
+    int col = tile.GetCol();
+    return _mapAlgebraicNotaion[col] + std::to_string(BOARD_SIZE - row);
+}
+
+GameStatus BoardArmenianTamas::GetGameStatus() const
 {
     if(_mapDrawRep.at(COUNT_2).first >= 2 * COUNT_2)
     {
@@ -98,7 +104,7 @@ draughts::GameStatus draughts::BoardTurkish::GetGameStatus() const
 }
 
 
-void draughts::BoardTurkish::Reset()
+void BoardArmenianTamas::Reset()
 {
     Board::Reset();
     for(auto& [k,p]: _mapDrawRep)
@@ -108,14 +114,7 @@ void draughts::BoardTurkish::Reset()
     }
 }
 
-void draughts::BoardTurkish::SetupTestPosition()
+void BoardArmenianTamas::SetupTestPosition()
 {
 
-}
-
-std::string draughts::BoardTurkish::TileToNotation(const Tile &tile) const
-{
-    int row = tile.GetRow();
-    int col = tile.GetCol();
-    return _mapAlgebraicNotaion[col] + std::to_string(BOARD_SIZE - row);
 }

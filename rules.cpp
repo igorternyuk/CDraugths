@@ -1,4 +1,4 @@
-#include "rules.hpp"
+#include "rules.h"
 #include <algorithm>
 
 using namespace draughts;
@@ -15,22 +15,47 @@ int Rules::GetPieceValue(const Piece &piece) const
 
 bool Rules::IsTileValid(const Position &position, const Tile &tile) const
 {
-     return tile.IsDark();
+    return tile.IsDark();
 }
 
 bool Rules::CheckIfCoronate(const Position &position, const Move &move) const
 {
+    /*if((piece.GetAlliance() == Alliance::LIGHT && ey == 0)
+            || (piece.GetAlliance() == Alliance::DARK && ey == BOARD_SIZE - 1))*/
+
     bool coronation = false;
-    const int BOARD_SIZE = position.GetBoardSize();
     const Step& step = move.GetLastStep();
-    const int ey = step.GetEnd().GetRow();
+    const int row = step.GetEnd().GetRow();
+    const int col = step.GetEnd().GetCol();
     const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
-    if((piece.GetAlliance() == Alliance::LIGHT && ey == 0)
-            || (piece.GetAlliance() == Alliance::DARK && ey == BOARD_SIZE - 1))
+
+    if(position.IsCoronationTile(row, col, piece.GetAlliance()))
     {
         coronation = true;
     }
     return coronation;
+}
+
+/*
+        inline static constexpr int _offsetX[8] { +1, -1, +1, -1, -1, +1, 0, 0 };
+        inline static constexpr int _offsetY[8] { -1, -1, +1, +1, 0, 0, -1, +1 };
+*/
+
+void Rules::PossibleDirections(const Piece &piece, bool isJump, std::vector<int> &dirs) const
+{
+    Alliance alliance = piece.GetAlliance();
+    if(piece.IsKing())
+    {
+        for(int i = 0; i < 4; ++i)
+            dirs.push_back(i);
+    }
+    else
+    {
+        int dy = DirectionOfAlliance(alliance);
+        for(int i = 0; i < 4; ++i)
+            if(_offsetY[i] == dy)
+                dirs.push_back(i);
+    }
 }
 
 bool Rules::IsSubset(const Move &first, const Move &second) const

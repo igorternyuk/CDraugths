@@ -1,4 +1,4 @@
-#include "rules_frisian.hpp"
+#include "rules_frisian.h"
 #include <algorithm>
 #include <iostream>
 
@@ -16,7 +16,7 @@ Alliance RulesFrisian::FirstMoveAlliance() const
 
 void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, std::vector<Move> &moves) const
 {
-    const int BOARD_SIZE = position.GetBoardSize();
+    const int BOARD_SIZE = std::max( position.GetBoardWidth(), position.GetBoardHeight());
     moves.clear();
 
     auto pieces = position.GetPieces(alliance);
@@ -54,15 +54,15 @@ void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, s
                 //int cnt2 = m2.StepCount();
                 //if(cnt1 == cnt2) //quality rule
                 //{
-                    int quality1 = MoveValue(m1);
-                    int quality2 = MoveValue(m2);
-                    if(quality1 == quality2)
-                    {
-                        const Piece& piece1 = m1.GetFirstStep().GetStart().GetPiece();
-                        const Piece& piece2 = m2.GetFirstStep().GetStart().GetPiece();
-                        return GetPieceValue(piece1) > GetPieceValue(piece2);
-                    }
-                    return quality1 > quality2;
+                int quality1 = MoveValue(m1);
+                int quality2 = MoveValue(m2);
+                if(quality1 == quality2)
+                {
+                    const Piece& piece1 = m1.GetFirstStep().GetStart().GetPiece();
+                    const Piece& piece2 = m2.GetFirstStep().GetStart().GetPiece();
+                    return GetPieceValue(piece1) > GetPieceValue(piece2);
+                }
+                return quality1 > quality2;
                 //}
                 //return cnt1 > cnt2;
             });
@@ -86,40 +86,24 @@ void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, s
         return;
     }
 
-    const int dy = DirectionOfAlliance(alliance);
-
     for(const auto& [i,p]: pieces)
     {
         const Piece& piece = *p;
+
+        std::vector<int> dirs;
+        PossibleDirections(piece, true, dirs);
+
         const int x = piece.GetCol();
         const int y = piece.GetRow();
         const Tile& currTile = position.GetTile(y, x);
-        if(piece.IsKing())
-        {
-            for(int dir = 0; dir < 4; ++dir)
-            {
-                for(int n = 1; n < BOARD_SIZE; ++n)
-                {
-                    int nx = x + n * _offsetX[dir];
-                    int ny = y + n * _offsetY[dir];
-                    const Tile& tile = position.GetTile(ny, nx);
-                    if(!tile.IsValid() || !tile.IsEmpty())
-                        break;
-                    Move move;
-                    Step step(currTile, tile);
-                    move.AddStep(step);
-                    moves.push_back(move);
-                }
-            }
-        }
-        else
-        {
-            int nx = 0, ny = 0;
 
-            for(int dx = -1; dx <= +1; dx += 2)
+        const int N = piece.IsKing() ? BOARD_SIZE - 1 : 2;
+        for(const auto& dir: dirs)
+        {
+            for(int n = 1; n < N; ++n)
             {
-                nx = x + dx;
-                ny = y + dy;
+                int nx = x + n * _offsetX[dir];
+                int ny = y + n * _offsetY[dir];
                 const Tile& tile = position.GetTile(ny, nx);
                 bool bIsTileValid = tile.IsValid();
                 if(bIsTileValid && tile.IsEmpty())
@@ -127,7 +111,7 @@ void RulesFrisian::CalcLegalMoves(const Position &position, Alliance alliance, s
                     Move move;
                     Step step(currTile, tile);
                     move.AddStep(step);
-                    if(CheckIfCoronate(position, move))
+                    if(!piece.IsKing() && CheckIfCoronate(position, move))
                         move.SetCoronation(true);
                     moves.push_back(move);
                 }
@@ -201,14 +185,61 @@ int RulesFrisian::GetPieceValue(const Piece &piece) const
     return piece.IsKing() ? int(MAN_KING_RATIO * PIECE_VALUE) : PIECE_VALUE;
 }
 
+void RulesFrisian::PossibleDirections(const Piece &piece, bool isJump, std::vector<int> &dirs) const
+{
+    if(isJump)
+    {
+        dirs.push_back(eLEFT);
+        dirs.push_back(eRIGHT);
+        dirs.push_back(eDOWN);
+        dirs.push_back(eUP);
+    }
+
+    if(piece.IsKing())
+    {
+        dirs.push_back(eRIGHT_UP);
+        dirs.push_back(eLEFT_UP);
+        dirs.push_back(eRIGHT_DOWN);
+        dirs.push_back(eLEFT_DOWN);
+
+    }
+    else
+    {
+        if(piece.GetAlliance() == Alliance::LIGHT)
+        {
+            dirs.push_back(eRIGHT_UP);
+            dirs.push_back(eLEFT_UP);
+            if(isJump)
+            {
+                dirs.push_back(eRIGHT_DOWN);
+                dirs.push_back(eLEFT_DOWN);
+            }
+        }
+        else if(piece.GetAlliance() == Alliance::DARK)
+        {
+            dirs.push_back(eRIGHT_DOWN);
+            dirs.push_back(eLEFT_DOWN);
+            if(isJump)
+            {
+                dirs.push_back(eRIGHT_UP);
+                dirs.push_back(eLEFT_UP);
+            }
+        }
+    }
+}
+
 void RulesFrisian::CalcAllJumps(const Position &position, const Piece &piece, Move move, std::vector<Move> &legalMoves) const
 {
+    const int BOARD_SIZE = std::max( position.GetBoardWidth(), position.GetBoardHeight());
     int px = piece.GetCol();
     int py = piece.GetRow();
     Tile startTile = position.GetTile(py, px);
 
+    std::vector<int> dirs;
+    PossibleDirections(piece, true, dirs);
+
     //std::cout << position.ToString() << std::endl;
-    for(int dir = 0; dir < 8; ++dir)
+    for(const auto& dir: dirs)
     {
         bool targetDetected = false;
         Tile current = position.GetTile(py, px);
@@ -216,7 +247,7 @@ void RulesFrisian::CalcAllJumps(const Position &position, const Piece &piece, Mo
         //dir < 4 diagonal directions
         //dir > 4 vertical and horizontal captures
         bool isDiagonaDir = dir < 4;
-        int N = (piece.IsKing() || move.IsCoronation()) ? position.GetBoardSize() - 1 : (isDiagonaDir ? 2 : 4);
+        int N = (piece.IsKing() /*|| move.IsCoronation()*/) ? BOARD_SIZE - 1 : (isDiagonaDir ? 2 : 4);
         for (int n = 1; n <= N; ++n)
         {
             int dx = n * _offsetX[dir];

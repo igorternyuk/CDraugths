@@ -1,4 +1,4 @@
-#include "tile.hpp"
+#include "tile.h"
 #include <cmath>
 
 using namespace draughts;
@@ -6,14 +6,14 @@ using namespace draughts;
 Tile Tile::NULL_TILE = Tile();
 
 Tile::Tile(int row, int col, bool isDark):
-    _row(row), _col(col), _isDark(isDark)
+        _row(row), _col(col), _isDark(isDark)
 {}
 
 
 bool Tile::operator==(const Tile &other) const
 {
     return this->_row == other._row && this->_col == other._col
-            && this->_piece == other._piece;
+           && this->_piece == other._piece;
 }
 
 bool Tile::operator!=(const Tile &other) const
@@ -94,4 +94,12 @@ const Piece& Tile::GetPiece() const
 Piece& Tile::GetPiece()
 {
     return _piece;
+}
+
+//Chebyshev distance
+int Tile::DistanceTo(const Tile &other) const
+{
+    int dx = std::abs(this->_col - other._col);
+    int dy = std::abs(this->_row - other._row);
+    return std::max(dx, dy);
 }

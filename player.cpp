@@ -1,5 +1,5 @@
-#include "player.hpp"
-#include "alliance.hpp"
+#include "player.h"
+#include "alliance.h"
 
 using namespace draughts;
 

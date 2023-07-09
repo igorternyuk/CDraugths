@@ -1,23 +1,52 @@
-﻿#include "board.hpp"
-#include "rules.hpp"
-#include "utils.hpp"
+#include "board.h"
+#include "rules.h"
+#include "utils.h"
 #include <algorithm>
 #include <iostream>
 #include <sstream>
 
 using namespace draughts;
 
-Board::Board(std::shared_ptr<Rules> rules, int N):
-    _rules(rules)
+Board::Board(std::shared_ptr<Rules> rules, size_t size) : Board(rules, size, size)
 {
-    _grid.reserve(N * N);
-    for(int r = 0; r < N; ++r)
-        for(int c = 0; c < N; ++c)
+
+}
+
+Board::Board(std::shared_ptr<Rules> rules, size_t W, size_t H):
+        _width(W), _rules(rules)
+{
+    _grid.reserve(W * H);
+    for(size_t r = 0; r < H; ++r)
+        for(size_t c = 0; c < W; ++c)
             _grid.push_back(Tile(r, c));
     _moveLog.clear();
     _gameStatus = GameStatus::PLAY;
     _bGameStatusChanged = true;
+}
 
+const std::vector<std::tuple<int,int>> &Board::GetCoronationTiles(Alliance alliance) const
+{
+    const int H = GetBoardHeight();
+    const int W = GetBoardWidth();
+    static std::map<Alliance,std::vector<std::tuple<int,int>>> _mapOfCoronationTiles;
+    if(_mapOfCoronationTiles.empty())
+    {
+        for(size_t r = 0; r < H; ++r)
+            for(size_t c = 0; c < W; ++c)
+            {
+                int index = IndexByCoords(r,c);
+                if(IsCoronationTile(r,c,Alliance::LIGHT))
+                {
+                    _mapOfCoronationTiles[Alliance::LIGHT].emplace_back(r, c);
+                }
+                else if(IsCoronationTile(r,c,Alliance::DARK))
+                {
+                    _mapOfCoronationTiles[Alliance::DARK].emplace_back(r, c);
+                }
+            }
+    }
+
+    return _mapOfCoronationTiles.at(alliance);
 }
 
 void Board::Clear()
@@ -48,19 +77,42 @@ const std::map<int, Piece *> &Board::GetPieces(Alliance alliance) const
     return _mapOfPieces.at(alliance);
 }
 
+int Board::GetBoardWidth() const
+{
+    return _width;
+}
+
+int Board::GetBoardHeight() const
+{
+    return _width > 0 ? _grid.size() / _width : 0;
+}
+
+int Board::GetBoardSize() const
+{
+    return std::min(GetBoardWidth(), GetBoardHeight());
+}
+
+bool Board::IsCoronationTile(int row, int col, Alliance alliance) const
+{
+    const int HEIGHT = GetBoardHeight();
+    return (alliance == Alliance::DARK && row == HEIGHT - 1)
+           || (alliance == Alliance::LIGHT && row == 0);
+}
+
 void Board::SetupInitialPosition()
 {
-    const int BOARD_SIZE = GetBoardSize();
+    const int H = GetBoardHeight();
+    const int W = GetBoardWidth();
     const int NUM_PIECES_ROWS = GetPieceRows();
     Reset();
     Clear();
     for(int y = 0; y < NUM_PIECES_ROWS; ++y)
-        for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
+        for(int x = (y + 1) % 2; x < W; x += 2)
             SetPiece(y,x,Alliance::DARK);
 
 
-    for(int y = BOARD_SIZE - NUM_PIECES_ROWS; y < BOARD_SIZE; ++y)
-        for(int x = (y + 1) % 2; x < BOARD_SIZE; x += 2)
+    for(int y = H - NUM_PIECES_ROWS; y < W; ++y)
+        for(int x = (y + 1) % 2; x < W; x += 2)
             SetPiece(y,x,Alliance::LIGHT);
 }
 
@@ -80,9 +132,10 @@ void Board::SetTile(const Tile &tile, int index)
 int Board::IndexByCoords(int row, int col) const
 {
     int index = -1;
-    const int N = GetBoardSize();
-    if(row >= 0 && row < N && col >= 0 && col < N)
-        index = row * N + col;
+    const int H = GetBoardHeight();
+    const int W = GetBoardWidth();
+    if(row >= 0 && row < H && col >= 0 && col < W)
+        index = row * W + col;
     return index;
 }
 
@@ -90,9 +143,10 @@ std::pair<int, int> Board::CoordsByIndex(int index) const
 {
     if(IsValidIndex(index))
     {
-        const int N = GetBoardSize();
-        int row = index / N;
-        int col = index % N;
+        const int H = GetBoardHeight();
+        const int W = GetBoardWidth();
+        int row = H > 0 ? index / H : 0;
+        int col = W > 0 ? index % W : 0;
         return {row, col};
     }
     else
@@ -112,30 +166,30 @@ bool Board::IsValidCoords(int row, int col) const
 
 void Board::CalcPieceCount(int aCount[]) const
 {
-    aCount[RED_PIECE] = 0;
-    aCount[RED_KING] = 0;
-    aCount[BLUE_PIECE] = 0;
-    aCount[BLUE_KING] = 0;
+    aCount[DARK_PIECE] = 0;
+    aCount[DARK_KING] = 0;
+    aCount[LIGHT_PIECE] = 0;
+    aCount[LIGHT_KING] = 0;
 
-    auto redPieces = GetPieces(Alliance::DARK);
-    auto bluePieces = GetPieces(Alliance::LIGHT);
+    auto darkPieces = GetPieces(Alliance::DARK);
+    auto lightPieces = GetPieces(Alliance::LIGHT);
 
-    for(const auto& [k,p] : redPieces)
+    for(const auto& [k,p] : darkPieces)
     {
         const Piece& piece = *p;
         if(piece.IsKing())
-            aCount[RED_KING]++;
+            aCount[DARK_KING]++;
         else
-            aCount[RED_PIECE]++;
+            aCount[DARK_PIECE]++;
     }
 
-    for(const auto& [k,p] : bluePieces)
+    for(const auto& [k,p] : lightPieces)
     {
         const Piece& piece = *p;
         if(piece.IsKing())
-            aCount[BLUE_KING]++;
+            aCount[LIGHT_KING]++;
         else
-            aCount[BLUE_PIECE]++;
+            aCount[LIGHT_PIECE]++;
     }
 }
 
@@ -155,7 +209,7 @@ std::string Board::MoveToNotation(const Move &move) const
         }
     }
     else
-    {        
+    {
         notation +=  "-" + TileToNotation(step.GetEnd());
     }
     return notation;
@@ -164,7 +218,7 @@ std::string Board::MoveToNotation(const Move &move) const
 
 bool Board::IsEndgameScenario() const
 {
-   return GetGameStatus() != GameStatus::PLAY;
+    return GetGameStatus() != GameStatus::PLAY;
 }
 
 GameStatus Board::GetGameStatus() const
@@ -175,17 +229,18 @@ GameStatus Board::GetGameStatus() const
 
         if(turn == Alliance::LIGHT)
         {
-            std::vector<Move> blueMoves;
-            _rules->CalcLegalMoves(*this, Alliance::LIGHT, blueMoves);
-            if(blueMoves.empty())
+            std::vector<Move> lightMoves;
+            const Position& pos = *this;
+            _rules->CalcLegalMoves(pos, Alliance::LIGHT, lightMoves);
+            if(lightMoves.empty())
                 return GameStatus::RED_WON;
         }
         else if(turn == Alliance::DARK)
         {
-           std::vector<Move> redMoves;
-           _rules->CalcLegalMoves(*this, Alliance::DARK, redMoves);
-           if(redMoves.empty())
-               return GameStatus::BLUE_WON;
+            std::vector<Move> darkMoves;
+            _rules->CalcLegalMoves(*this, Alliance::DARK, darkMoves);
+            if(darkMoves.empty())
+                return GameStatus::BLUE_WON;
         }
 
         _bGameStatusChanged = false;
@@ -247,7 +302,7 @@ bool Board::MakeMove(const Move& move)
 
     //TODO make this check in rules
     if(!(HasValidTile(startRow, startCol) && _rules->IsTileValid(*this, tileStart)
-            && HasValidTile(endRow, endCol) && _rules->IsTileValid(*this, tileEnd)))
+         && HasValidTile(endRow, endCol) && _rules->IsTileValid(*this, tileEnd)))
         return false;
 
     GetTile(startRow, startCol).RemovePiece();
@@ -258,7 +313,7 @@ bool Board::MakeMove(const Move& move)
     int endIndex = IndexByCoords(endRow, endCol);
     //size_t sz_ = _mapOfPieces[turn].size();
     _mapOfPieces[turn].erase(startIndex);
-   // size_t sz = _mapOfPieces[turn].size();
+    // size_t sz = _mapOfPieces[turn].size();
     _mapOfPieces[turn][endIndex] = &GetTile(endRow, endCol).GetPiece();
 
     Alliance opponent = OpponentAlliance(turn);
@@ -304,10 +359,10 @@ bool Board::UndoLastMove()
     int startIndex = IndexByCoords(startRow, startCol);
     int endIndex = IndexByCoords(endRow, endCol);
     Alliance opponent = OpponentAlliance(turn);
-     GetTile(startRow, startCol).SetPiece(movedPiece);
+    GetTile(startRow, startCol).SetPiece(movedPiece);
     if(move.IsCoronation())
         GetTile(startRow, startCol).GetPiece().Uncrown();
-     GetTile(endRow, endCol).RemovePiece();
+    GetTile(endRow, endCol).RemovePiece();
     _mapOfPieces[opponent][startIndex] = &GetTile(startRow, startCol).GetPiece();
     _mapOfPieces[opponent].erase(endIndex);
 
@@ -347,12 +402,13 @@ unsigned int Board::GetHash() const
 
 std::string Board::ToString() const
 {
-    const int BOARD_SIZE = GetBoardSize();
+    const int HEIGHT = GetBoardHeight();
+    const int WIDTH = GetBoardWidth();
     std::stringstream ss;
-    for(int y = 0; y < BOARD_SIZE; ++y)
+    for(int y = 0; y < HEIGHT; ++y)
     {
         std::string line;
-        for(int x = 0; x < BOARD_SIZE; ++x)
+        for(int x = 0; x < WIDTH; ++x)
         {
             const Tile& tile = GetTile(y,x);
             if(tile.HasPiece())
@@ -396,7 +452,7 @@ void Board::LegalMoves(Alliance alliance, std::vector<Move> &moves) const
     }
     else
     {
-       std::copy(_legalMoves.begin(), _legalMoves.end(), std::back_inserter(moves));
+        std::copy(_legalMoves.begin(), _legalMoves.end(), std::back_inserter(moves));
     }
 }
 
@@ -421,3 +477,5 @@ std::shared_ptr<draughts::Rules> Board::GetRules() const
 {
     return _rules;
 }
+
+

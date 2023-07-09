@@ -1,4 +1,4 @@
-#include "drawhelper.hpp"
+#include "drawhelper.h"
 #include <GL/glut.h>
 #include <cmath>
 #include <cstring>

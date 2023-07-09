@@ -1,12 +1,12 @@
 #pragma once
-#include "evaluation_strategy.hpp"
+#include "evaluation_strategy.h"
 
 namespace draughts
 {
-    class EuristicDefault : public EvaluationStrategy
+    class HeuristicDiagonal : public EvaluationStrategy
     {
     public:
-        EuristicDefault();
+        HeuristicDiagonal();
         virtual int Evaluate(const Position& position, const Rules& rules) override;
     };
 }

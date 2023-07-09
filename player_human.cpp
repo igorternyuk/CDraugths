@@ -1,5 +1,5 @@
-#include "player_human.hpp"
-#include "utils.hpp"
+#include "player_human.h"
+#include "utils.h"
 
 using namespace draughts;
 
@@ -31,14 +31,14 @@ Move PlayerHuman::MakeMove(const Position &position)
         bool isSubset = false;
         for(int li = 0; li < movesAvailable; ++li)
         {
-             Move& lm = lolm[li];
-             if(Utils::AreMovesEqual(move,lm))
-             {
-                 lm.UpdateStatus();
-                 Unselect();
-                 return lm;
-             }
-             isSubset |= Utils::IsSubset(move, lm);
+            Move& lm = lolm[li];
+            if(Utils::AreMovesEqual(move,lm))
+            {
+                lm.UpdateStatus();
+                Unselect();
+                return lm;
+            }
+            isSubset |= Utils::IsSubset(move, lm);
         }
 
         if(!isSubset)

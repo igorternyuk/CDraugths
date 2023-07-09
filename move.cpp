@@ -1,4 +1,4 @@
-#include "move.hpp"
+#include "move.h"
 
 using namespace draughts;
 
@@ -98,4 +98,8 @@ const Step &Move::GetLastStep() const
 const Move::Status &Move::GetStatus() const
 {
     return _status;
+}
+
+Step &Move::GetFirstStep() {
+    return _steps.front();
 }

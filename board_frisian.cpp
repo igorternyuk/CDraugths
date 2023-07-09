@@ -1,12 +1,13 @@
-#include "board_frisian.hpp"
-#include "rules_frisian.hpp"
+#include "board_frisian.h"
+#include "rules_frisian.h"
 #include <iostream>
 
 using namespace draughts;
 
+static std::map<int, std::string> _mapNotation = FillNotationMap(BoardFrisian::BOARD_SIZE,BoardFrisian::BOARD_SIZE, true, false);
+
 BoardFrisian::BoardFrisian(): Board(std::make_shared<RulesFrisian>(), BOARD_SIZE)
 {
-    int k = 0;
     for(int r = 0; r < BOARD_SIZE; ++r)
         for(int c = 0; c < BOARD_SIZE; ++c)
         {
@@ -14,8 +15,6 @@ BoardFrisian::BoardFrisian(): Board(std::make_shared<RulesFrisian>(), BOARD_SIZE
             {
                 Tile& tile = GetTile(r, c);
                 tile.SetDark();
-                int index = IndexByCoords(r, c);
-                _mapNotation[index] = std::to_string(++k);
             }
         }
 }
@@ -34,8 +33,8 @@ bool BoardFrisian::MakeMove(const Move &move)
 
         int aCount[4];
         CalcPieceCount(aCount);
-        if((aCount[RED_KING] == 2 && aCount[RED_PIECE] == 0 && aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING] == 1)
-                || (aCount[BLUE_KING] == 2 && aCount[BLUE_PIECE] == 0 && aCount[RED_PIECE] == 0 && aCount[RED_KING] == 1))
+        if((aCount[DARK_KING] == 2 && aCount[DARK_PIECE] == 0 && aCount[LIGHT_PIECE] == 0 && aCount[LIGHT_KING] == 1)
+           || (aCount[LIGHT_KING] == 2 && aCount[LIGHT_PIECE] == 0 && aCount[DARK_PIECE] == 0 && aCount[DARK_KING] == 1))
         {
             ++_mapDrawRep[COUNT_7].first;
             _mapDrawRep[COUNT_7].second = true;
@@ -43,7 +42,7 @@ bool BoardFrisian::MakeMove(const Move &move)
         else
             _mapDrawRep[COUNT_7].second = false;
 
-        if((aCount[RED_KING] == 1 && aCount[RED_PIECE] == 0 && aCount[BLUE_PIECE] == 0 && aCount[BLUE_KING] == 1))
+        if((aCount[DARK_KING] == 1 && aCount[DARK_PIECE] == 0 && aCount[LIGHT_PIECE] == 0 && aCount[LIGHT_KING] == 1))
         {
             ++_mapDrawRep[COUNT_2].first;
             _mapDrawRep[COUNT_2].second = true;
@@ -58,7 +57,7 @@ bool BoardFrisian::MakeMove(const Move &move)
 }
 
 bool BoardFrisian::UndoLastMove()
-{   
+{
     if(Board::UndoLastMove())
     {
         for(auto& [k, p]: _mapDrawRep)
@@ -118,11 +117,6 @@ void BoardFrisian::Reset()
         p.first = 0;
         p.second = false;
     }
-}
-
-int BoardFrisian::GetBoardSize() const
-{
-    return BOARD_SIZE;
 }
 
 int BoardFrisian::GetPieceRows() const

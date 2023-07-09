@@ -1,5 +1,5 @@
-#include "alphabeta.hpp"
-#include "utils.hpp"
+#include "alphabeta.h"
+#include "utils.h"
 #include <cmath>
 #include <algorithm>
 #include <chrono>
@@ -13,7 +13,7 @@ using namespace draughts;
 constexpr int INF = 1000000000;
 
 MiniMaxAlphaBeta::MiniMaxAlphaBeta(std::shared_ptr<EvaluationStrategy> evaluator, int depth, bool log):
-    _searchDepth(depth), _boardEvaluated(0), _cutoffsProduced(0), _evaluationStrategy(evaluator), _log(log)
+        _searchDepth(depth), _boardEvaluated(0), _cutoffsProduced(0), _evaluationStrategy(evaluator), _log(log)
 {}
 
 Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Player& player)
@@ -125,7 +125,7 @@ Move MiniMaxAlphaBeta::GetBestMove(std::shared_ptr<Position> position, const Pla
             if(currVal.score > maxVal)
             {
                 bestMove = *it;
-               vBestMoves.push_back({currVal.score, bestMove});
+                vBestMoves.push_back({currVal.score, bestMove});
                 maxVal = std::max(currVal.score, maxVal);
                 if(position->IsEndgameScenario())
                     break;
@@ -239,7 +239,7 @@ MiniMaxAlphaBeta::Evaluation MiniMaxAlphaBeta::max(std::shared_ptr<Position> pos
         {
             ++_cutoffsProduced;
             break;
-        }        
+        }
         position->UndoLastMove();
     }
     return evalBest;

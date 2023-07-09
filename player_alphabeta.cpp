@@ -1,11 +1,11 @@
-#include "player_alphabeta.hpp"
-#include "alphabeta.hpp"
-#include "euristic_default.hpp"
+#include "player_alphabeta.h"
+#include "alphabeta.h"
+#include "heuristic_default.h"
 
 using namespace draughts;
 
-PlayerAlphaBeta::PlayerAlphaBeta(Alliance alliance, int depth) :
-    PlayerCPU(alliance, std::make_shared<MiniMaxAlphaBeta>(std::make_shared<EuristicDefault>(),depth))
+PlayerAlphaBeta::PlayerAlphaBeta(Alliance alliance, int depth, std::shared_ptr<EvaluationStrategy> evaluationStrategy) :
+        PlayerCPU(alliance, std::make_shared<MiniMaxAlphaBeta>(evaluationStrategy, depth))
 {
 
 }

@@ -1,33 +1,18 @@
-#include "board_canadian.hpp"
+#include "board_canadian.h"
 
 using namespace draughts;
 
+static std::map<int, std::string> _mapNotation = FillNotationMap(BoardCanadian::BOARD_SIZE,BoardCanadian::BOARD_SIZE);
+
 BoardCanadian::BoardCanadian(): BoardInternational(BOARD_SIZE)
 {
-    int k = 0;
-    for(int r = 0; r < BOARD_SIZE; ++r)
-        for(int c = 0; c < BOARD_SIZE; ++c)
-        {
-            if((c + r) % 2 != 0)
-            {
-                Tile& tile = GetTile(r, c);
-                tile.SetDark();
-                ++k;
-                int index = IndexByCoords(r, c);
-                _mapNotation[index] = std::to_string(k);
-            }
-        }
+    BoardInternational::SetupBoard();
     BoardInternational::SetupInitialPosition();
 }
 
 std::shared_ptr<Position> BoardCanadian::MakeCopy() const
 {
     return std::make_shared<BoardCanadian>(*this);
-}
-
-int BoardCanadian::GetBoardSize() const
-{
-    return BOARD_SIZE;
 }
 
 int BoardCanadian::GetPieceRows() const
@@ -38,4 +23,17 @@ int BoardCanadian::GetPieceRows() const
 Notation BoardCanadian::GetNotation() const
 {
     return Notation::NUMERIC;
+}
+
+std::string BoardCanadian::TileToNotation(const Tile &tile) const
+{
+    const int row = tile.GetRow();
+    const int col = tile.GetCol();
+    if(IsValidCoords(row, col))
+    {
+        const int index = IndexByCoords(row, col);
+        if(_mapNotation.find(index) != _mapNotation.end())
+            return _mapNotation.at(index);
+    }
+    return std::string("");
 }

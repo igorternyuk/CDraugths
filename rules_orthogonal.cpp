@@ -1,53 +1,31 @@
-#include "rules_international.h"
+#include "rules_orthogonal.h"
 #include <algorithm>
+#include <iostream>
+#include <ostream>
 
 using namespace draughts;
 
-RulesInternational::RulesInternational()
+RulesOrthogonal::RulesOrthogonal()
 {
 
 }
 
-void RulesInternational::PossibleDirections(const Piece &piece, bool isJump, std::vector<int> &dirs) const
+Alliance RulesOrthogonal::FirstMoveAlliance() const
 {
-    if(piece.IsKing())
-    {
-        dirs.push_back(eRIGHT_UP);
-        dirs.push_back(eLEFT_UP);
-        dirs.push_back(eRIGHT_DOWN);
-        dirs.push_back(eLEFT_DOWN);
-    }
-    else
-    {
-        if(piece.GetAlliance() == Alliance::LIGHT)
-        {
-            dirs.push_back(eRIGHT_UP);
-            dirs.push_back(eLEFT_UP);
-            if(isJump)
-            {
-                dirs.push_back(eRIGHT_UP);
-                dirs.push_back(eLEFT_UP);
-            }
-        }
-        else if(piece.GetAlliance() == Alliance::DARK)
-        {
-            dirs.push_back(eRIGHT_DOWN);
-            dirs.push_back(eLEFT_DOWN);
-            if(isJump)
-            {
-                dirs.push_back(eRIGHT_UP);
-                dirs.push_back(eLEFT_UP);
-            }
-        }
-    }
+    return Alliance::LIGHT;
 }
 
-void RulesInternational::CalcLegalMoves(const Position &position, Alliance alliance, std::vector<Move> &moves) const
+bool RulesOrthogonal::IsTileValid(const Position &position, const Tile &tile) const
 {
-    const int BOARD_SIZE = position.GetBoardSize();
+    return tile.IsDark() || tile.IsLight();
+}
+
+void RulesOrthogonal::CalcLegalMoves(const Position &position, Alliance alliance, std::vector<Move> &moves) const
+{
     moves.clear();
 
     auto pieces = position.GetPieces(alliance);
+
     for(const auto& [i,p]: pieces)
     {
         Move move;
@@ -56,59 +34,54 @@ void RulesInternational::CalcLegalMoves(const Position &position, Alliance allia
 
     if(!moves.empty())
     {
-        if(moves.size() > 1)
-        {
-            RemoveSubsets(moves);
-        }
+        RemoveSubsets(moves);
 
         for(auto& m: moves)
         {
             if(CheckIfCoronate(position, m))
-            {
                 m.SetCoronation(true);
-                m.GetFirstStep().GetStart().GetPiece().Crown();
-            }
         }
 
         if(moves.size() > 1)
         {
             //Majority rule
-            std::sort(moves.begin(), moves.end(), [](const auto& m1, const auto& m2){
+            std::sort(moves.begin(), moves.end(), [&](const Move& m1, const Move& m2){
                 int cnt1 = m1.StepCount();
                 int cnt2 = m2.StepCount();
                 return cnt1 > cnt2;
             });
 
-            const int maxCapture = moves[0].StepCount();
-
-            auto it_ = std::remove_if(moves.begin(), moves.end(), [maxCapture](auto &move)
+            const size_t maxCapture = moves[0].StepCount();
+            auto it_ = std::remove_if(moves.begin(), moves.end(), [&](Move &move)
             {
                 return move.StepCount() < maxCapture;
             });
 
             moves.erase(it_, moves.end());
         }
+
         return;
     }
 
     for(const auto& [i,p]: pieces)
     {
         const Piece& piece = *p;
+
         std::vector<int> dirs;
         PossibleDirections(piece, false, dirs);
+
         const int x = piece.GetCol();
         const int y = piece.GetRow();
         const Tile& currTile = position.GetTile(y, x);
-        const int N = piece.IsKing() ? BOARD_SIZE - 1 : 1;
-        for(const auto& dir: dirs)
+        for(auto&& dir: dirs)
+            //for(int dir = 4; dir < 8; dir++)
         {
-            for(int n = 1; n <= N; ++n)
+            int nx = x + _offsetX[dir];
+            int ny = y + _offsetY[dir];
+            const Tile& tile = position.GetTile(ny, nx);
+            bool bIsTileValid = tile.IsValid();
+            if(bIsTileValid && tile.IsEmpty())
             {
-                int nx = x + n * _offsetX[dir];
-                int ny = y + n * _offsetY[dir];
-                const Tile& tile = position.GetTile(ny, nx);
-                if(!tile.IsValid() || !tile.IsEmpty())
-                    break;
                 Move move;
                 Step step(currTile, tile);
                 move.AddStep(step);
@@ -120,22 +93,46 @@ void RulesInternational::CalcLegalMoves(const Position &position, Alliance allia
     }
 }
 
-void RulesInternational::CalcAllJumps(const Position &position, const Piece &piece, Move move, std::vector<Move> &legalMoves) const
+void RulesOrthogonal::CalcAllJumps(const Position &position, const Piece &piece, Move move, std::vector<Move> &legalMoves) const
 {
     int px = piece.GetCol();
     int py = piece.GetRow();
     Tile startTile = position.GetTile(py, px);
-    int N = (piece.IsKing() /*|| move.IsCoronation()*/) ? position.GetBoardSize() - 1 : 2;
+    int opposit_dir = -1;
+    if(!move.IsEmpty())
+    {
+
+        const Tile& tile1 = move.GetLastStep().GetStart();
+        const Tile& tile2 = move.GetLastStep().GetEnd();
+        int dx = tile2.GetCol() - tile1.GetCol();
+        int dy = tile2.GetRow() - tile1.GetRow();
+        int d = std::max(abs(dx), abs(dy));
+        dx /= d;
+        dy /= d;
+        int dir_index = 0;
+        for(int i = 0; i < 8; ++i)
+        {
+            if(_offsetX[i] == dx && _offsetY[i] == dy)
+            {
+                dir_index = i;
+                break;
+            }
+        }
+        opposit_dir = _oppositeDir[dir_index];
+    }
 
     std::vector<int> dirs;
     PossibleDirections(piece, true, dirs);
 
+    //std::cout << position.ToString() << std::endl;
     for(const auto& dir: dirs)
     {
+        if(dir == opposit_dir)
+            continue;
         bool targetDetected = false;
         Tile current = position.GetTile(py, px);
         Piece target;
-
+        int N = (piece.IsKing()/* || move.IsCoronation()*/) ? position.GetBoardHeight() - 1 : 2;
         for (int n = 1; n <= N; ++n)
         {
             int dx = n * _offsetX[dir];
@@ -162,17 +159,22 @@ void RulesInternational::CalcAllJumps(const Position &position, const Piece &pie
                         break;
                     }
                 }
-                if(!isSameTarget)
+                if(isSameTarget)
+                {
+                    targetDetected = false;
+                    continue;
+                }
+                else
                 {
                     Step step(startTile, current, target);
                     Move oldMove = move;
                     move.AddStep(step);
                     Piece p(current.GetRow(), current.GetCol(), piece.GetAlliance(), piece.IsKing());
-                    /*if(CheckIfCoronate(position, move))
+                    if(CheckIfCoronate(position, move))
                     {
                         //p.Crown();
                         move.SetCoronation(true);
-                    }*/
+                    }
                     CalcAllJumps(position, p, move, legalMoves);
                     legalMoves.push_back(move);
                     move = oldMove;
@@ -199,4 +201,24 @@ void RulesInternational::CalcAllJumps(const Position &position, const Piece &pie
             }
         }
     }
+}
+
+bool RulesOrthogonal::CheckIfCoronate(const Position &position, const Move &move) const
+{
+    bool coronation = false;
+    for(size_t i = 0; i < move.StepCount(); ++i)
+    {
+        const Step& step = move.GetStep(i);
+        const int row = step.GetEnd().GetRow();
+        const int col = step.GetEnd().GetCol();
+        const Piece& piece = move.GetFirstStep().GetStart().GetPiece();
+
+        if(position.IsCoronationTile(row, col, piece.GetAlliance()))
+        {
+            coronation = true;
+            break;
+        }
+    }
+
+    return coronation;
 }

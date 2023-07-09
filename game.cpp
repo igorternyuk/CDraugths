@@ -1,15 +1,20 @@
-#include "game.hpp"
-#include "board_draugths64.hpp"
-#include "board_polish.hpp"
-#include "board_brazilian.hpp"
-#include "board_canadian.hpp"
-#include "board_checkers.hpp"
-#include "board_portuguese.hpp"
-#include "board_frisian.hpp"
-#include "board_turkish.hpp"
-#include "player_human.hpp"
-#include "player_alphabeta.hpp"
-#include "rules.hpp"
+#include "game.h"
+#include "board_ru.h"
+#include "board_polish.h"
+#include "board_brazilian.h"
+#include "board_canadian.h"
+#include "board_checkers.h"
+#include "board_italian.h"
+#include "board_portuguese.h"
+#include "board_frisian.h"
+#include "board_turkish.h"
+#include "board_armenian_tamas.h"
+#include "board_diagonal64.h"
+#include "board_diagonal100.h"
+#include "player_human.h"
+#include "player_alphabeta.h"
+#include "heuristic_diagonal.h"
+#include "rules.h"
 #include <GL/glut.h>
 #include <iostream>
 #include <algorithm>
@@ -25,7 +30,7 @@ Game *Game::GetInstance()
 
 Game::Game():_mode(Mode::HUMAN_CPU), _type(Type::POLISH)
 {
-   //SetupNewGame(_type, _mode, Level::eEASY);
+    //SetupNewGame(_type, _mode, Level::eEASY);
 }
 
 Board &Game::GetBoard()
@@ -88,7 +93,7 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     //TODO add all remaining game types
     if(type == Type::DRAUGHTS64)
     {
-        _board = std::make_shared<BoardDraugths64>();
+        _board = std::make_shared<BoardRu>();
     }
     else if(type == Type::POLISH)
     {
@@ -102,9 +107,13 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     {
         _board = std::make_shared<BoardCanadian>();
     }
-    else if(type == Type::CHECKRERS)
+    else if(type == Type::CHECKERS)
     {
         _board = std::make_shared<BoardCheckers>();
+    }
+    else if(type == Type::ITALIAN)
+    {
+        _board = std::make_shared<BoardItalian>();
     }
     else if(type == Type::PORTUGUESE)
     {
@@ -118,16 +127,38 @@ void Game::SetupNewGame(Type type, Mode mode, int searchDepth)
     {
         _board = std::make_shared<BoardTurkish>();
     }
+    else if(type == Type::ARMENIAN)
+    {
+        _board = std::make_shared<BoardArmenianTamas>();
+    }
+    else if(type == Type::DRAUGHTS80)
+    {
+        _board = std::make_shared<BoardRu>(10,8);
+    }
+    else if(type == Type::DIAGONAL64)
+    {
+        _board = std::make_shared<BoardDiagonal64>();
+    }
+    else if(type == Type::DIAGONAL100)
+    {
+        _board = std::make_shared<BoardDiagonal100>();
+    }
 
     if(mode == Mode::HUMAN_CPU)
     {
-        _playerBlue = std::make_shared<PlayerHuman>(Alliance::LIGHT);
-        _playerRed = std::make_shared<PlayerAlphaBeta>(Alliance::DARK, searchDepth);
+        _playerLight = std::make_shared<PlayerHuman>(Alliance::LIGHT);
+        if(type == Type::DIAGONAL64 == type == Type::DIAGONAL100)
+            _playerDark = std::make_shared<PlayerAlphaBeta>(Alliance::DARK, searchDepth, std::make_shared<HeuristicDiagonal>());
+        else
+            _playerDark = std::make_shared<PlayerAlphaBeta>(Alliance::DARK, searchDepth);
     }
     else if(mode == Mode::CPU_HUMAN)
     {
-        _playerBlue = std::make_shared<PlayerAlphaBeta>(Alliance::LIGHT, searchDepth);
-        _playerRed = std::make_shared<PlayerHuman>(Alliance::DARK);
+        if(type == Type::DIAGONAL64 == type == Type::DIAGONAL100)
+            _playerLight = std::make_shared<PlayerAlphaBeta>(Alliance::LIGHT, searchDepth,std::make_shared<HeuristicDiagonal>());
+        else
+            _playerLight = std::make_shared<PlayerAlphaBeta>(Alliance::LIGHT, searchDepth);
+        _playerDark = std::make_shared<PlayerHuman>(Alliance::DARK);
     }
 
     _mode = mode;
@@ -184,7 +215,7 @@ int Game::MapLevelToSearchDepth(Level level)
         case Level::eHARDEST:
             searchDepth = 9;
             break;
-        break;
+            break;
         default:
             searchDepth = 5;
     }
@@ -211,6 +242,10 @@ const Move &Game::GetLastMove() const
 
 const std::shared_ptr<Player> &Game::GetPlayer(Alliance alliance) const
 {
-    return alliance == Alliance::DARK ? _playerRed : _playerBlue;
+    return alliance == Alliance::DARK ? _playerDark : _playerLight;
+}
+
+Game::Type Game::GetType() const {
+    return _type;
 }
 

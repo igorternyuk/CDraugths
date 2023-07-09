@@ -1,4 +1,4 @@
-#include "piece.hpp"
+#include "piece.h"
 
 using namespace draughts;
 
@@ -7,7 +7,7 @@ Piece Piece::NULL_PIECE = Piece();
 bool Piece::operator==(const Piece &piece) const
 {
     return this->_row == piece._row && this->_col == piece._col
-            && this->_isKing == piece._isKing && this->_alliance == piece._alliance;
+           && this->_isKing == piece._isKing && this->_alliance == piece._alliance;
 }
 
 bool Piece::operator!=(const Piece &piece) const
@@ -16,10 +16,9 @@ bool Piece::operator!=(const Piece &piece) const
 }
 
 Piece::Piece(int row, int col, Alliance alliance, bool isKing):
-    _row(row), _col(col), _alliance(alliance), _isKing(isKing)
+        _row(row), _col(col), _alliance(alliance), _isKing(isKing)
 {
 }
-
 
 int Piece::GetRow() const
 {

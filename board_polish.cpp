@@ -1,6 +1,8 @@
-#include "board_polish.hpp"
+#include "board_polish.h"
 
 using namespace draughts;
+
+static std::map<int, std::string> _mapNotation = FillNotationMap(BoardPolish::BOARD_SIZE,BoardPolish::BOARD_SIZE);
 
 BoardPolish::BoardPolish(): BoardInternational(BOARD_SIZE)
 {
@@ -25,11 +27,6 @@ std::shared_ptr<Position> BoardPolish::MakeCopy() const
     return std::make_shared<BoardPolish>(*this);
 }
 
-int BoardPolish::GetBoardSize() const
-{
-    return BOARD_SIZE;
-}
-
 int BoardPolish::GetPieceRows() const
 {
     return NUM_PIECE_ROWS;
@@ -38,4 +35,16 @@ int BoardPolish::GetPieceRows() const
 Notation BoardPolish::GetNotation() const
 {
     return Notation::NUMERIC;
+}
+
+std::string BoardPolish::TileToNotation(const Tile &tile) const {
+    const int row = tile.GetRow();
+    const int col = tile.GetCol();
+    if(IsValidCoords(row, col))
+    {
+        const int index = IndexByCoords(row, col);
+        if(_mapNotation.find(index) != _mapNotation.end())
+            return _mapNotation.at(index);
+    }
+    return std::string("");
 }

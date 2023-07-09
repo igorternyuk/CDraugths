@@ -1,4 +1,4 @@
-#include "alliance.hpp"
+#include "alliance.h"
 
 draughts::Alliance draughts::OpponentAlliance(Alliance &alliance)
 {

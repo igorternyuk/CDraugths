@@ -1,4 +1,4 @@
-#include "utils.hpp"
+#include "utils.h"
 
 using namespace draughts;
 
@@ -32,11 +32,11 @@ std::vector<std::string> Utils::split(const std::string &input, const std::strin
 unsigned int Utils::hash_str(const char *s)
 {
     unsigned int h = FIRSTH;
-       while (*s) {
-         h = (h * A) ^ (s[0] * B);
-         s++;
-       }
-       return h % C;
+    while (*s) {
+        h = (h * A) ^ (s[0] * B);
+        s++;
+    }
+    return h % C;
 }
 
 bool Utils::AreStepsEqual(const Step &first, const Step &second)

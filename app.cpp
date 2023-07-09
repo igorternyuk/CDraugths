@@ -1,5 +1,5 @@
-#include "app.hpp"
-#include "view.hpp"
+#include "app.h"
+#include "view.h"
 #include <GL/freeglut.h>
 #include <iostream>
 #include <algorithm>
