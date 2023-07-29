@@ -22,6 +22,8 @@ bool RulesOrthogonal::IsTileValid(const Position &position, const Tile &tile) co
 
 void RulesOrthogonal::CalcLegalMoves(const Position &position, Alliance alliance, std::vector<Move> &moves) const
 {
+    const int BOARD_SIZE = position.GetBoardSize();
+
     moves.clear();
 
     auto pieces = position.GetPieces(alliance);
@@ -73,15 +75,16 @@ void RulesOrthogonal::CalcLegalMoves(const Position &position, Alliance alliance
         const int x = piece.GetCol();
         const int y = piece.GetRow();
         const Tile& currTile = position.GetTile(y, x);
-        for(auto&& dir: dirs)
-            //for(int dir = 4; dir < 8; dir++)
+        const int N = piece.IsKing() ? BOARD_SIZE - 1 : 1;
+        for(const auto& dir: dirs)
         {
-            int nx = x + _offsetX[dir];
-            int ny = y + _offsetY[dir];
-            const Tile& tile = position.GetTile(ny, nx);
-            bool bIsTileValid = tile.IsValid();
-            if(bIsTileValid && tile.IsEmpty())
+            for(int n = 1; n <= N; ++n)
             {
+                int nx = x + n * _offsetX[dir];
+                int ny = y + n * _offsetY[dir];
+                const Tile& tile = position.GetTile(ny, nx);
+                if(!tile.IsValid() || !tile.IsEmpty())
+                    break;
                 Move move;
                 Step step(currTile, tile);
                 move.AddStep(step);

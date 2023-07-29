@@ -103,3 +103,8 @@ const Move::Status &Move::GetStatus() const
 Step &Move::GetFirstStep() {
     return _steps.front();
 }
+
+void Move::MarkToRemove()
+{
+    _status = Status::TO_REMOVE;
+}
