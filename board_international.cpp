@@ -162,14 +162,35 @@ void BoardInternational::SetupTestPosition()
 {
     Reset();
     Clear();
-    SetPiece(2,7,Alliance::DARK, true);
-    SetPiece(6,7,Alliance::DARK, false);
-    SetPiece(9,2,Alliance::DARK, false);
-    SetPiece(9,4,Alliance::DARK, false);
 
-    SetPiece(5,4,Alliance::LIGHT, false);
-    SetPiece(6,5,Alliance::LIGHT, false);
-    SetPiece(8,5,Alliance::LIGHT, false);
+    const std::string board_map[10][10]
+            {
+                    {"[ ]","[d]","[.]","[d]","[ ]","[d]","[ ]","[.]","[ ]","[.]"},
+                    {"[.]","[ ]","[d]","[ ]","[d]","[ ]","[d]","[ ]","[d]","[ ]"},
+                    {"[ ]","[.]","[ ]","[.]","[ ]","[.]","[ ]","[d]","[ ]","[.]"},
+                    {"[.]","[ ]","[.]","[ ]","[.]","[ ]","[.]","[ ]","[.]","[ ]"},
+                    {"[ ]","[.]","[ ]","[.]","[ ]","[.]","[ ]","[.]","[ ]","[.]"},
+                    {"[.]","[ ]","[d]","[ ]","[d]","[ ]","[.]","[ ]","[ ]","[ ]"},
+                    {"[ ]","[.]","[ ]","[.]","[ ]","[l]","[ ]","[ ]","[ ]","[l]"},
+                    {"[l]","[ ]","[.]","[ ]","[l]","[ ]","[.]","[ ]","[l]","[ ]"},
+                    {"[ ]","[.]","[ ]","[l]","[ ]","[.]","[ ]","[.]","[ ]","[.]"},
+                    {"[.]","[ ]","[.]","[ ]","[l]","[ ]","[l]","[ ]","[l]","[ ]"},
+            };
+
+    for(int y = 0; y < 10; ++y)
+    {
+        for(int x = 0; x < 10; ++x)
+        {
+            if(board_map[y][x] == "[d]")
+                SetPiece(y,x,Alliance::DARK, false);
+            else if(board_map[y][x] == "[D]")
+                SetPiece(y,x,Alliance::DARK, true);
+            else if(board_map[y][x] == "[l]")
+                SetPiece(y,x,Alliance::LIGHT, false);
+            else if(board_map[y][x] == "[L]")
+                SetPiece(y,x,Alliance::LIGHT, true);
+        }
+    }
 }
 
 void BoardInternational::SetupBoard()

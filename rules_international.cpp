@@ -25,8 +25,8 @@ void RulesInternational::PossibleDirections(const Piece &piece, bool isJump, std
             dirs.push_back(eLEFT_UP);
             if(isJump)
             {
-                dirs.push_back(eRIGHT_UP);
-                dirs.push_back(eLEFT_UP);
+                dirs.push_back(eRIGHT_DOWN);
+                dirs.push_back(eLEFT_DOWN);
             }
         }
         else if(piece.GetAlliance() == Alliance::DARK)
